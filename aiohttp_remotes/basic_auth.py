@@ -1,7 +1,7 @@
 import base64
 import binascii
 
-from aiohttp import web
+from aiohttp import hdrs, web
 
 
 class BasicAuth:
@@ -31,14 +31,14 @@ class BasicAuth:
     async def request_basic_auth(self, request):
         return web.HTTPUnauthorized(
             headers={
-                'WWW-Authenticate': 'Basic realm={}'.format(self._realm)
+                hdrs.WWW_AUTHENTICATE: 'Basic realm={}'.format(self._realm)
             },
         )
 
     async def __call__(self, app, handler):
         async def middleware_handler(request):
             if request.path not in self._white_paths:
-                auth_header = request.headers.get('Authorization')
+                auth_header = request.headers.get(hdrs.AUTHORIZATION)
 
                 if auth_header is None or not auth_header.startswith('Basic '):
                     return await self.request_basic_auth(request)
