@@ -1,2 +1,5 @@
 dist
 __pycache__
+.cache
+.coverage
+htmlcov

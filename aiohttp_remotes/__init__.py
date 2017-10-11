@@ -7,3 +7,11 @@ aiohttp.web.Request if the server is deployed behind reverse proxy.
 
 
 __version__ = '0.0.1'
+
+
+
+from .basic_auth import BasicAuth
+
+
+
+__all__ = ('BasicAuth',)
