@@ -6,41 +6,16 @@ from .exceptions import TooManyHeaders
 from .log import logger
 
 
-class XForwardedRelaxed:
+class ForwardedRelaxed:
 
     async def raise_error(self):
         raise web.HTTPBadRequest()
 
-    def get_forwarded_for(self, headers):
-        forwarded_for = headers.getall(hdrs.X_FORWARDED_FOR)
-        if not forwarded_for:
-            return []
-        if len(forwarded_for) > 1:
-            raise TooManyHeaders(hdrs.X_FORWARDED_FOR)
-        forwarded_for = forwarded_for.split(',')
-        forwarded_for = [
-            ip_address(addr) for addr in
-            (a.strip() for a in forwarded_for)
-            if addr
-        ]
-
-        return forwarded_for
-
-    def get_forwarded_proto(self, headers):
-        forwarded_proto = headers.getall(hdrs.X_FORWARDED_PROTO)
-        if len(forwarded_proto) > 1:
-            raise TooManyHeaders(hdrs.X_FORWARDED_PROTO)
-        return forwarded_proto
-
-    def get_forwarded_host(self, headers):
-        forwarded_host = headers.get(hdrs.X_FORWARDED_HOST, '')
-        if len(forwarded_host) > 1:
-            raise TooManyHeaders(hdrs.X_FORWARDED_HOST)
-        return forwarded_host
-
     async def middleware_handler(self, request, handler):
         overrides = {}
 
+        for elem in request.forwarded:
+            pass
         forwarded_for = self.get_forwarded_for()
         if forwarded_for:
             overrides['remote'] = str(forwarded_for[0])
@@ -70,7 +45,7 @@ class XForwardedRelaxed:
         return middleware_handler
 
 
-class XForwardedStrict(XForwardedRelaxed):
+class ForwardedStrict(ForwardedRelaxed):
 
     def __init__(self, num_proxies=1, upstreams=(), *, white_paths=()):
         self._num_proxies = num_proxies

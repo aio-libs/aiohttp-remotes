@@ -8,25 +8,28 @@ class ANY:
 
 class AllowedHosts:
 
-    def __init__(self, allowed_hosts=None, whitelist=tuple()):
+    def __init__(self, allowed_hosts=None, *, white_paths=()):
         if allowed_hosts is None:
-            allowed_hosts = ['*']
-
-        allowed_hosts = set(allowed_hosts)
+            allowed_hosts = {'*'}
+        else:
+            allowed_hosts = set(allowed_hosts)
 
         if '*' in allowed_hosts:
             allowed_hosts = ANY()
 
-        self.allowed_hosts = allowed_hosts
-        self.whitelist = set(whitelist)
+        self._allowed_hosts = allowed_hosts
+        self._white_paths = set(white_paths)
 
-    async def middleware_factory(self, app, handler):
+    async def raise_error(self):
+        raise web.HTTPBadRequest()
+
+    async def __call__(self, app, handler):
         async def middleware_handler(request):
             if (
-                request.raw_path not in self.whitelist and
-                request.host not in self.allowed_hosts
+                request.path not in self._white_paths and
+                request.host not in self._allowed_hosts
             ):
-                raise web.HTTPNotAcceptable
+                await self.raise_error()
 
             return await handler(request)
 
