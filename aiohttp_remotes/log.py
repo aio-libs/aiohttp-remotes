@@ -1,4 +1,4 @@
 import logging
 
 
-log = logging.getLogger(__package__)
+logger = logging.getLogger(__package__)
