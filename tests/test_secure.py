@@ -171,8 +171,9 @@ async def test_default_redirect():
 
 def test_non_https_redirect_url():
     with pytest.raises(ValueError):
-        Secure(redirect_url='http:example.com')
+        Secure(redirect_url='http://example.com')
+
 
 def test_redirect_url_with_path():
     with pytest.raises(ValueError):
-        Secure(redirect_url='https:example.com/path/to')
+        Secure(redirect_url='https://example.com/path/to')
