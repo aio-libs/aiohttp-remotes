@@ -1,12 +1,14 @@
 from aiohttp import web
 
+from .abc import ABC
+
 
 class ANY:
     def __contains__(self, item):
         return True
 
 
-class AllowedHosts:
+class AllowedHosts(ABC):
 
     def __init__(self, allowed_hosts=None, *, white_paths=()):
         if allowed_hosts is None:
@@ -20,17 +22,15 @@ class AllowedHosts:
         self._allowed_hosts = allowed_hosts
         self._white_paths = set(white_paths)
 
-    async def raise_error(self):
-        raise web.HTTPBadRequest()
+    def setup(self, app):
+        app.middlewares.append(self.middleware)
 
-    async def __call__(self, app, handler):
-        async def middleware_handler(request):
-            if (
-                request.path not in self._white_paths and
-                request.host not in self._allowed_hosts
-            ):
-                await self.raise_error()
+    @web.middleware
+    async def middleware(self, request, handler):
+        if (
+            request.path not in self._white_paths and
+            request.host not in self._allowed_hosts
+        ):
+            await self.raise_error(request)
 
-            return await handler(request)
-
-        return middleware_handler
+        return await handler(request)

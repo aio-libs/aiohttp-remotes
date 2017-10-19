@@ -1,3 +1,11 @@
+from ipaddress import ip_address, ip_network
+
+import aiohttp
+from aiohttp import web
+
+from .log import logger
+
+
 class CloudflareMiddleware:
 
     def __init__(
@@ -10,34 +18,35 @@ class CloudflareMiddleware:
     ):
         self.header = header
         self.url = url
-        self.proxy = bool(num_proxies)
         self.whitelist = set(whitelist)
 
-        if self.proxy:
+        if num_proxies:
             self.proxy = ProxyMiddleware(
                 num_proxies=num_proxies,
                 upstreams=upstreams,
             )
+        else:
+            self.proxy = None
 
-        self.__masks = set()
+        self._masks = set()
 
     async def setup(self):
-        async with ClientSession() as session:
+        async with aiohttp.ClientSession() as session:
             async with session.get(self.url) as response:
                 text = await response.text()
 
         for mask in text.split('\n'):
             try:
-                mask = IPNetwork(mask)
-            except (ValueError, TypeError, AddrFormatError):
+                mask = ip_network(mask)
+            except (ValueError, TypeError):
                 continue
 
-            self.__masks.add(mask)
+            self._masks.add(mask)
 
-        assert self.__masks
+        assert self._masks
 
     def is_cloudflare(self, remote_addr):
-        remote_addr = IPAddress(remote_addr)
+        remote_addr = ip_address(remote_addr)
 
         return any(map(lambda mask: remote_addr in mask, self.__masks))
 

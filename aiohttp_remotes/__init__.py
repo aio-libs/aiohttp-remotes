@@ -11,8 +11,15 @@ __version__ = '0.0.1'
 
 from .allowed_hosts import AllowedHosts
 from .basic_auth import BasicAuth
+from .secure import Secure
 from .x_forwarded import XForwardedRelaxed, XForwardedStrict
 
 
-__all__ = ('AllowedHosts', 'BasicAuth',
-           'XForwardedRelaxed', 'XForwardedStrict')
+def setup(app, *args):
+    for arg in args:
+        arg.setup(app)
+
+
+__all__ = ('AllowedHosts', 'BasicAuth', 'Secure',
+           'XForwardedRelaxed', 'XForwardedStrict',
+           'setup')
