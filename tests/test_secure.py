@@ -177,3 +177,7 @@ def test_non_https_redirect_url():
 def test_redirect_url_with_path():
     with pytest.raises(ValueError):
         Secure(redirect_url='https://example.com/path/to')
+
+
+def test_redirect_url_ok():
+    Secure(redirect_url='https://example.com')
