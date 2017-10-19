@@ -4,6 +4,8 @@ import ssl
 import aiohttp
 import pytest
 from aiohttp import web
+from aiohttp.test_utils import make_mocked_request
+from yarl import URL
 
 from aiohttp_remotes import setup as _setup, Secure
 
@@ -152,3 +154,17 @@ async def test_no_xss(test_client, test_server, ssl_ctx):
     assert resp.headers['Strict-Transport-Security'] == expected
     assert resp.headers['X-Content-Type-Options'] == 'nosniff'
     assert 'X-XSS-Protection' not in resp.headers
+
+
+
+async def test_default_redirect():
+    s = Secure()
+
+    async def handler(request):
+        pass
+
+    req = make_mocked_request('GET', '/path',
+                              headers={'Host': 'example.com'})
+    with pytest.raises(web.HTTPPermanentRedirect) as ctx:
+        await s.middleware(req, handler)
+    assert ctx.value.location == URL('https://example.com/path')
