@@ -156,7 +156,6 @@ async def test_no_xss(test_client, test_server, ssl_ctx):
     assert 'X-XSS-Protection' not in resp.headers
 
 
-
 async def test_default_redirect():
     s = Secure()
 
@@ -168,3 +167,12 @@ async def test_default_redirect():
     with pytest.raises(web.HTTPPermanentRedirect) as ctx:
         await s.middleware(req, handler)
     assert ctx.value.location == URL('https://example.com/path')
+
+
+def test_non_https_redirect_url():
+    with pytest.raises(ValueError):
+        Secure(redirect_url='http:example.com')
+
+def test_redirect_url_with_path():
+    with pytest.raises(ValueError):
+        Secure(redirect_url='https:example.com/path/to')
