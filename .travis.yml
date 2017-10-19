@@ -1,0 +1,62 @@
+language: python
+sudo: false
+
+python:
+  - 3.5
+  - &mainstream_python 3.6
+
+env:
+  global:
+    - FLIT_USERNAME=andrew.svetlov
+    - secure: "Qo5edrxE+KPaIZPR/xJ0HamoFvjcIECfsNPJD/LevyiveNZwmOU7sT+oi9foMTj3CwlExyJ4JKBqpEGCZn87dr9M354BY+9K8RNsFtMD3HXNZGivLHUQSKW7BEtrPajgGJIUEwtKu+shJzzygWu2G5QJ3uAn8pDHX5Podu7EFIhg3ZydN91dO9MlEjg8M5kO0eMCZg3OKkpYLuZZvCfrXf9l6tLrBWcABqAThR2cPfvh8ycXwuesuwVl/bgflLCv3D+MpsvE0eO1yW1ivopltL4hUGkbYbs/XaFdRHoIzVggmOJX3qIxTRF+3SxYba2eSYSnpbm1r69Aktl6h6fVFXjlpFj4fHV1Me98HKM8eLBFhBfN4tcU1kQBvX+A5FVc7h+vBmA+I6hQx/NMdFoOPYmnRkQsio3rke1U4jqmIp3fivcg9GoBRzHW+Hk1h31bsC6YpPFQNAY7QQ/qT89Ip2vYvF3X8ebss2ZCKHDiULblrFAPaPr04vsPP49icq+Ov/btwbfwUUAXoa1fMa3MQ0f7SgnaDpb4bWUNTOR7Zx8UghpoFUIHH2MGpYX99sRpBxSzLb9JM7SucT2vV213Xylg+BP0MtQQag7l+Eo01R3OaKQpXHKpC+pH+6dIQn29aMhvpjBSrnvbplvzfIo7sHLVOxQKN8NFr3TbkBsbeIo="
+
+
+install:
+  - travis_retry pip install codecov
+  - travis_retry pip install -r requirements/ci.txt
+  - flit install --symlink
+script:
+  - make test
+  - codecov
+  - PYTHONASYNCIODEBUG=x make test
+  - codecov
+
+_helpers:
+- &_mainstream_python_base
+  python: *mainstream_python
+- &_reset_steps
+  env: []
+  before_install: skip
+  install: skip
+  script: skip
+  after_success: []
+
+jobs:
+  include:
+  - stage: lint
+    <<: *_mainstream_python_base
+    <<: *_reset_steps
+    install:
+      - travis_retry pip install -r requirements/lint.txt
+      - flit install --symlink
+    script:
+      - true
+  - stage: deploy
+    if: tag IS present
+    <<: *_mainstream_python_base
+    <<: *_reset_steps
+    install:
+      - travis_retry pip install -r requirements/ci.txt
+    script:
+      - flit publish
+
+stages:
+  - *lint
+  - test
+  - name: deploy
+    # This will prevent deploy unless it's a tagged commit:
+    if: tag IS present
+
+cache: pip
+before_cache:
+- rm -f $HOME/.cache/pip/log/debug.log
