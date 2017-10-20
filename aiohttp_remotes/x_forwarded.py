@@ -2,14 +2,15 @@ from ipaddress import ip_address, ip_network
 
 from aiohttp import hdrs, web
 
+from .abc import ABC
 from .exceptions import TooManyHeaders
 from .log import logger
 
 
-class XForwardedRelaxed:
+class XForwardedRelaxed(ABC):
 
-    async def raise_error(self):
-        raise web.HTTPBadRequest()
+    def setup(self, app):
+        app.middlewares.append(self.middleware)
 
     def get_forwarded_for(self, headers):
         forwarded_for = headers.getall(hdrs.X_FORWARDED_FOR)
@@ -28,8 +29,13 @@ class XForwardedRelaxed:
 
     def get_forwarded_proto(self, headers):
         forwarded_proto = headers.getall(hdrs.X_FORWARDED_PROTO)
+        if not forwarded_proto:
+            return []
         if len(forwarded_proto) > 1:
             raise TooManyHeaders(hdrs.X_FORWARDED_PROTO)
+        forwarded_proto = forwarded_proto.split(',')
+        forwarded_proto = [p.strip() for p in forwarded_proto]
+
         return forwarded_proto
 
     def get_forwarded_host(self, headers):
@@ -38,7 +44,7 @@ class XForwardedRelaxed:
             raise TooManyHeaders(hdrs.X_FORWARDED_HOST)
         return forwarded_host
 
-    async def middleware_handler(self, request, handler):
+    async def handler(self, request, handler):
         overrides = {}
 
         forwarded_for = self.get_forwarded_for()
@@ -46,8 +52,8 @@ class XForwardedRelaxed:
             overrides['remote'] = str(forwarded_for[0])
 
         proto = self.get_forwarded_proto()
-        if proto is not None:
-            overrides['scheme'] = proto
+        if proto:
+            overrides['scheme'] = proto[0]
 
         host = self.get_forwarded_host()
         if host is not None:
@@ -57,17 +63,16 @@ class XForwardedRelaxed:
 
         return await handler(request)
 
-    async def __call__(self, app, handler):
-        async def middleware_handler(request):
-            try:
-                return await self.middleware_handler(request, handler)
-            except TooManyHeaders as exc:
-                msg = 'Too many headers for %(header)s'
-                context = {'header': exc.header}
-                logger.error(msg, context, extra={'request': request,
-                                                  'header': exc.header})
-                self.raise_error()
-        return middleware_handler
+    @web.middleware
+    async def middleware(self, request, handler):
+        try:
+            return await self.handler(request, handler)
+        except TooManyHeaders as exc:
+            msg = 'Too many headers for %(header)s'
+            context = {'header': exc.header}
+            logger.error(msg, context, extra={'request': request,
+                                              'header': exc.header})
+            self.raise_error(request)
 
 
 class XForwardedStrict(XForwardedRelaxed):
@@ -103,24 +108,24 @@ class XForwardedStrict(XForwardedRelaxed):
 
         return remote_addr, trusted
 
-    async def middleware_handler(self, request, handler):
-        if request.path not in self.white_paths:
+    async def handler(self, request, handler):
+        if request.path not in self._white_paths:
             overrides = {}
-            remote_addr, trusted = self._get_remote_addr(request)
+            remote_addr, trusted = self.get_remote_addr(request)
 
             if not trusted:
                 msg = 'Reverse proxy not found: %(remote_addr)s'
                 context = {'remote_addr': remote_addr}
                 logger.error(msg, context, extra={'request': request})
 
-                self.raise_error()
+                self.raise_error(request)
             overrides['remote'] = str(remote_addr)
 
-            proto = self._get_forwarded_proto()
+            proto = self.get_forwarded_proto()
             if proto is not None:
                 overrides['scheme'] = proto
 
-            host = self._get_forwarded_host()
+            host = self.get_forwarded_host()
             if host is not None:
                 overrides['host'] = host
 
