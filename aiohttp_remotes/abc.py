@@ -5,7 +5,7 @@ from aiohttp import web
 class ABC(abc.ABC):
     @abc.abstractmethod
     def setup(self, app):
-        pass
+        pass  # pragma: no cover
 
     async def raise_error(self, request):
         raise web.HTTPBadRequest()
