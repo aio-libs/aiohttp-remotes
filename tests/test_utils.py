@@ -1,9 +1,7 @@
-from ipaddress import (ip_address, ip_network, IPv4Address,
-                       IPv6Address, IPv4Network, IPv6Network)
+from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
 
 import pytest
-
-from aiohttp_remotes.exceptions import UntrustedIP, IncorrectIPCount
+from aiohttp_remotes.exceptions import IncorrectIPCount, UntrustedIP
 from aiohttp_remotes.utils import parse_trusted_list, remote_ip
 
 
@@ -46,7 +44,9 @@ def test_parse_non_ip_item():
     with pytest.raises(ValueError):
         parse_trusted_list([['garbage']])
 
+
 # --------------------- remote_ip -----------------------
+
 
 def test_remote_ip_no_trusted():
     ip = ip_address('10.10.10.10')

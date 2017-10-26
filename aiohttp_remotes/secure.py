@@ -1,7 +1,6 @@
 from aiohttp import web
 from yarl import URL
 
-
 from .abc import ABC
 from .log import logger
 

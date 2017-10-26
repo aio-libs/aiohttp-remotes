@@ -18,8 +18,6 @@ install:
 script:
   - make test
   - codecov
-  - PYTHONASYNCIODEBUG=x make test
-  - codecov
 
 _helpers:
 - &_mainstream_python_base
@@ -40,7 +38,7 @@ jobs:
       - travis_retry pip install -r requirements/lint.txt
       - flit install --symlink
     script:
-      - true
+      - make flake
   - stage: deploy
     if: tag IS present
     <<: *_mainstream_python_base

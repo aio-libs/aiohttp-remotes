@@ -1,11 +1,8 @@
-from collections.abc import Sequence, Container
-
-from ipaddress import (ip_address, ip_network, IPv4Address,
-                       IPv6Address, IPv4Network, IPv6Network)
-
+from collections.abc import Container, Sequence
+from ipaddress import (IPv4Address, IPv4Network, IPv6Address, IPv6Network,
+                       ip_address, ip_network)
 
 from .exceptions import IncorrectIPCount, UntrustedIP
-
 
 MSG = ('Trusted list should be a sequence of sets '
        'with either addresses or networks.')

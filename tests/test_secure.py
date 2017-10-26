@@ -5,9 +5,9 @@ import aiohttp
 import pytest
 from aiohttp import web
 from aiohttp.test_utils import make_mocked_request
+from aiohttp_remotes import setup as _setup
+from aiohttp_remotes import Secure
 from yarl import URL
-
-from aiohttp_remotes import setup as _setup, Secure
 
 
 @pytest.fixture

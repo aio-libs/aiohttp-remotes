@@ -1,8 +1,9 @@
-import aiohttp
 import base64
-from aiohttp import web
 
-from aiohttp_remotes import setup as _setup, BasicAuth
+import aiohttp
+from aiohttp import web
+from aiohttp_remotes import setup as _setup
+from aiohttp_remotes import BasicAuth
 
 
 def test_props():

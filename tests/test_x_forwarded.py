@@ -1,7 +1,6 @@
-import aiohttp
 from aiohttp import web
-
-from aiohttp_remotes import setup as _setup, XForwardedRelaxed, XForwardedStrict
+from aiohttp_remotes import setup as _setup
+from aiohttp_remotes import XForwardedRelaxed, XForwardedStrict
 
 
 async def test_x_forwarded_relaxed_ok(test_client):
@@ -183,7 +182,8 @@ async def test_x_forwarded_strict_too_many_for(test_client):
     _setup(app, XForwardedStrict([['127.0.0.1']]))
     cl = await test_client(app)
     resp = await cl.get('/',
-                        headers={'X-Forwarded-For': '10.10.10.10, 11.11.11.11'})
+                        headers={'X-Forwarded-For':
+                                 '10.10.10.10, 11.11.11.11'})
     assert resp.status == 400
 
 

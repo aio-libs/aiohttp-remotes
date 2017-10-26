@@ -1,10 +1,9 @@
-from ipaddress import ip_address, ip_network
+from ipaddress import ip_address
 
 from aiohttp import hdrs, web
 
 from .abc import ABC
-from .exceptions import TooManyHeaders, RemoteError, IncorrectProtoCount
-from .log import logger
+from .exceptions import IncorrectProtoCount, RemoteError, TooManyHeaders
 from .utils import parse_trusted_list, remote_ip
 
 

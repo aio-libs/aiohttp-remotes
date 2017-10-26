@@ -5,6 +5,8 @@ from aiohttp import web
 
 from .log import logger
 
+ProxyMiddleware = 1
+
 
 class CloudflareMiddleware:
 

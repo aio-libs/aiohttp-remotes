@@ -1,6 +1,6 @@
 from ipaddress import ip_address, ip_network
 
-from aiohttp import hdrs, web
+from aiohttp import web
 
 from .exceptions import TooManyHeaders
 from .log import logger
