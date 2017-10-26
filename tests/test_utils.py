@@ -94,4 +94,5 @@ def test_remote_ip_invalis_ips_count():
     with pytest.raises(IncorrectIPsCount) as ctx:
         remote_ip(trusted, ips)
     assert ctx.value.expected == 3
-    assert ctx.value.actual == 2
+    assert ctx.value.actual == [IPv4Address('10.10.10.10'),
+                                IPv4Address('20.20.20.20')]

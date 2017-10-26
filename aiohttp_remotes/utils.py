@@ -40,7 +40,7 @@ def parse_trusted_list(lst):
 
 def remote_ip(trusted, ips):
     if len(trusted) + 1 != len(ips):
-        raise IncorrectIPsCount(len(trusted) + 1, len(ips))
+        raise IncorrectIPsCount(len(trusted) + 1, ips)
     for i in range(len(trusted)):
         ip = ips[i]
         for elem in trusted[i]:

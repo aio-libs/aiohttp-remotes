@@ -3,7 +3,8 @@ from ipaddress import ip_address, ip_network
 from aiohttp import hdrs, web
 
 from .abc import ABC
-from .exceptions import TooManyHeaders
+from .exceptions import (TooManyHeaders, IncorrectIPsCount,
+                         IncorrectProtoCount, UntrustedIP)
 from .log import logger
 from .utils import parse_trusted_list, remote_ip
 
@@ -96,6 +97,8 @@ class XForwardedStrict(XForwardedRelaxed):
 
             proto = self.get_forwarded_proto(headers)
             if proto:
+                if len(proto) > len(self._trusted):
+                    raise IncorrectProtoCount(len(self._trusted), proto)
                 overrides['scheme'] = proto[0]
 
             host = self.get_forwarded_host(headers)
@@ -105,9 +108,20 @@ class XForwardedStrict(XForwardedRelaxed):
             request = request.clone(**overrides)
 
             return await handler(request)
+
         except TooManyHeaders as exc:
             msg = 'Too many headers for %(header)s'
             context = {'header': exc.header}
-            logger.error(msg, context, extra={'request': request,
-                                              'header': exc.header})
+            extra = context.copy()
+            extra['request'] = request
+            logger.error(msg, context, extra=extra)
+            await self.raise_error(request)
+
+        except IncorrectProtoCount as exc:
+            msg = 'Too many X-Forwarded-Proto values: %(actual)s, %(expected)s'
+            context = {'actual': exc.actual,
+                       'expected': exc.expected}
+            extra = context.copy()
+            extra['request'] = request
+            logger.error(msg, context, extra=extra)
             await self.raise_error(request)
