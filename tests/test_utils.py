@@ -3,7 +3,7 @@ from ipaddress import (ip_address, ip_network, IPv4Address,
 
 import pytest
 
-from aiohttp_remotes.exceptions import UntrustedIP, IncorrectIPsCount
+from aiohttp_remotes.exceptions import UntrustedIP, IncorrectIPCount
 from aiohttp_remotes.utils import parse_trusted_list, remote_ip
 
 
@@ -91,7 +91,7 @@ def test_remote_ip_invalis_ips_count():
            ip_address('20.20.20.20')]
     trusted = parse_trusted_list([['40.40.40.40'],
                                   ['20.20.20.20']])
-    with pytest.raises(IncorrectIPsCount) as ctx:
+    with pytest.raises(IncorrectIPCount) as ctx:
         remote_ip(trusted, ips)
     assert ctx.value.expected == 3
     assert ctx.value.actual == [IPv4Address('10.10.10.10'),

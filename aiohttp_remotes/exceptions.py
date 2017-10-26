@@ -5,7 +5,7 @@ class TooManyHeaders(Exception):
 
 
 
-class IncorrectIPsCount(Exception):
+class IncorrectIPCount(Exception):
     @property
     def expected(self):
         return self.args[0]

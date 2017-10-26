@@ -4,7 +4,7 @@ from ipaddress import (ip_address, ip_network, IPv4Address,
                        IPv6Address, IPv4Network, IPv6Network)
 
 
-from .exceptions import IncorrectIPsCount, UntrustedIP
+from .exceptions import IncorrectIPCount, UntrustedIP
 
 
 MSG = ('Trusted list should be a sequence of sets '
@@ -40,7 +40,7 @@ def parse_trusted_list(lst):
 
 def remote_ip(trusted, ips):
     if len(trusted) + 1 != len(ips):
-        raise IncorrectIPsCount(len(trusted) + 1, ips)
+        raise IncorrectIPCount(len(trusted) + 1, ips)
     for i in range(len(trusted)):
         ip = ips[i]
         for elem in trusted[i]:
