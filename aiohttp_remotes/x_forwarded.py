@@ -5,7 +5,7 @@ from aiohttp import hdrs, web
 from .abc import ABC
 from .exceptions import TooManyHeaders
 from .log import logger
-from .utils import parse_trusted_list
+from .utils import parse_trusted_list, remote_ip
 
 
 class XForwardedRelaxed(ABC):
@@ -49,8 +49,8 @@ class XForwardedRelaxed(ABC):
     async def middleware(self, request, handler):
         try:
             overrides = {}
-
             headers = request.headers
+
             forwarded_for = self.get_forwarded_for(headers)
             if forwarded_for:
                 overrides['remote'] = str(forwarded_for[0])
@@ -86,18 +86,19 @@ class XForwardedStrict(XForwardedRelaxed):
             return await handler(request)
         try:
             overrides = {}
+            headers = request.headers
 
-            forwarded_for = self.get_forwarded_for()
+            forwarded_for = self.get_forwarded_for(headers)
             peer_ip, _ = request.transport.get_extra_info('peername')
-            ips = [peer_ip] + list(reversed(forwarded_for))
-            remote_ip = remote_ip(self._trusted, ips)
-            overrides['remote'] = str(remote_ip)
+            ips = [ip_address(peer_ip)] + list(reversed(forwarded_for))
+            ip = remote_ip(self._trusted, ips)
+            overrides['remote'] = str(ip)
 
-            proto = self.get_forwarded_proto()
+            proto = self.get_forwarded_proto(headers)
             if proto:
                 overrides['scheme'] = proto[0]
 
-            host = self.get_forwarded_host()
+            host = self.get_forwarded_host(headers)
             if host is not None:
                 overrides['host'] = host
 
