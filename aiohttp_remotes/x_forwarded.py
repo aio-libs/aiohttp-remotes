@@ -3,8 +3,7 @@ from ipaddress import ip_address, ip_network
 from aiohttp import hdrs, web
 
 from .abc import ABC
-from .exceptions import (TooManyHeaders, IncorrectIPCount,
-                         IncorrectProtoCount, UntrustedIP)
+from .exceptions import TooManyHeaders, RemoteError, IncorrectProtoCount
 from .log import logger
 from .utils import parse_trusted_list, remote_ip
 
@@ -67,11 +66,8 @@ class XForwardedRelaxed(ABC):
             request = request.clone(**overrides)
 
             return await handler(request)
-        except TooManyHeaders as exc:
-            msg = 'Too many headers for %(header)s'
-            context = {'header': exc.header}
-            logger.error(msg, context, extra={'request': request,
-                                              'header': exc.header})
+        except RemoteError as exc:
+            exc.log(request)
             await self.raise_error(request)
 
 
@@ -109,39 +105,6 @@ class XForwardedStrict(XForwardedRelaxed):
 
             return await handler(request)
 
-        except TooManyHeaders as exc:
-            msg = 'Too many headers for %(header)s'
-            context = {'header': exc.header}
-            extra = context.copy()
-            extra['request'] = request
-            logger.error(msg, context, extra=extra)
-            await self.raise_error(request)
-
-        except IncorrectProtoCount as exc:
-            msg = ('Too many X-Forwarded-Proto values: %(actual)s, '
-                   'expected %(expected)s')
-            context = {'actual': exc.actual,
-                       'expected': exc.expected}
-            extra = context.copy()
-            extra['request'] = request
-            logger.error(msg, context, extra=extra)
-            await self.raise_error(request)
-
-        except IncorrectIPCount as exc:
-            msg = ('Too many X-Forwarded-For values: %(actual)s, '
-                   'expected %(expected)s')
-            context = {'actual': exc.actual,
-                       'expected': exc.expected}
-            extra = context.copy()
-            extra['request'] = request
-            logger.error(msg, context, extra=extra)
-            await self.raise_error(request)
-
-        except UntrustedIP as exc:
-            msg = 'Untrusted IP: %(ip)s, trusted: %(expected)s'
-            context = {'ip': exc.ip,
-                       'trusted': exc.trusted}
-            extra = context.copy()
-            extra['request'] = request
-            logger.error(msg, context, extra=extra)
+        except RemoteError as exc:
+            exc.log(request)
             await self.raise_error(request)
