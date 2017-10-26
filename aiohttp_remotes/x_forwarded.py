@@ -8,7 +8,7 @@ from .log import logger
 from .utils import parse_trusted_list, remote_ip
 
 
-class XForwardedRelaxed(ABC):
+class XForwardedBase(ABC):
 
     def setup(self, app):
         app.middlewares.append(self.middleware)
@@ -45,6 +45,12 @@ class XForwardedRelaxed(ABC):
             raise TooManyHeaders(hdrs.X_FORWARDED_HOST)
         return forwarded_host[0] if forwarded_host else None
 
+
+class XForwardedRelaxed(XForwardedBase):
+
+    def __init__(self, num=1):
+        self._num = num
+
     @web.middleware
     async def middleware(self, request, handler):
         try:
@@ -53,11 +59,11 @@ class XForwardedRelaxed(ABC):
 
             forwarded_for = self.get_forwarded_for(headers)
             if forwarded_for:
-                overrides['remote'] = str(forwarded_for[0])
+                overrides['remote'] = str(forwarded_for[-self._num])
 
             proto = self.get_forwarded_proto(headers)
             if proto:
-                overrides['scheme'] = proto[0]
+                overrides['scheme'] = proto[-self._num]
 
             host = self.get_forwarded_host(headers)
             if host is not None:
@@ -71,7 +77,7 @@ class XForwardedRelaxed(ABC):
             await self.raise_error(request)
 
 
-class XForwardedStrict(XForwardedRelaxed):
+class XForwardedStrict(XForwardedBase):
 
     def __init__(self, trusted, *, white_paths=()):
         self._trusted = parse_trusted_list(trusted)
