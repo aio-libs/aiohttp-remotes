@@ -17,8 +17,8 @@ async def test_forwarded_relaxed_ok(test_client):
     _setup(app, ForwardedRelaxed())
     cl = await test_client(app)
     hdr_val = '; '.join(['for=10.10.10.10',
-                        'proto=https',
-                        'host=example.com'])
+                         'proto=https',
+                         'host=example.com'])
     resp = await cl.get('/', headers={'Forwarded': hdr_val})
     assert resp.status == 200
 
@@ -40,6 +40,7 @@ async def test_forwarded_relaxed_no_for(test_client):
                         'host=example.com'])
     resp = await cl.get('/', headers={'Forwarded': hdr_val})
     assert resp.status == 200
+
 
 async def test_forwarded_relaxed_no_proto(test_client):
     async def handler(request):
@@ -105,7 +106,7 @@ async def test_forwarded_relaxed_many_hosts(test_client):
     assert resp.status == 200
 
 
-async def xtest_x_forwarded_strict_ok(test_client):
+async def test_forwarded_strict_ok(test_client):
     async def handler(request):
         assert request.host == 'example.com'
         assert request.scheme == 'https'
@@ -116,11 +117,12 @@ async def xtest_x_forwarded_strict_ok(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, XForwardedStrict([['127.0.0.1']]))
+    _setup(app, ForwardedStrict([['127.0.0.1']]))
     cl = await test_client(app)
-    resp = await cl.get('/', headers={'X-Forwarded-For': '10.10.10.10',
-                                      'X-Forwarded-Proto': 'https',
-                                      'X-Forwarded-Host': 'example.com'})
+    hdr_val = '; '.join(['for=10.10.10.10',
+                         'proto=https',
+                         'host=example.com'])
+    resp = await cl.get('/', headers={'Forwarded': hdr_val})
     assert resp.status == 200
 
 
@@ -134,7 +136,7 @@ async def xtest_x_forwarded_strict_no_proto(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, XForwardedStrict([['127.0.0.1']]))
+    _setup(app, ForwardedStrict([['127.0.0.1']]))
     cl = await test_client(app)
     resp = await cl.get('/', headers={'X-Forwarded-For': '10.10.10.10',
                                       'X-Forwarded-Host': 'example.com'})
@@ -151,7 +153,7 @@ async def xtest_x_forwarded_strict_no_host(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, XForwardedStrict([['127.0.0.1']]))
+    _setup(app, ForwardedStrict([['127.0.0.1']]))
     cl = await test_client(app)
     resp = await cl.get('/', headers={'X-Forwarded-For': '10.10.10.10',
                                       'X-Forwarded-Proto': 'https'})
@@ -169,7 +171,7 @@ async def xtest_x_forwarded_strict_too_many_headers(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, XForwardedStrict([['127.0.0.1']]))
+    _setup(app, ForwardedStrict([['127.0.0.1']]))
     cl = await test_client(app)
     resp = await cl.get('/', headers=[('X-Forwarded-For', '10.10.10.10'),
                                       ('X-Forwarded-Proto', 'https'),
@@ -184,7 +186,7 @@ async def xtest_x_forwarded_strict_too_many_protos(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, XForwardedStrict([['127.0.0.1']]))
+    _setup(app, ForwardedStrict([['127.0.0.1']]))
     cl = await test_client(app)
     resp = await cl.get('/',
                         headers={'X-Forwarded-For': '10.10.10.10',
@@ -198,7 +200,7 @@ async def xtest_x_forwarded_strict_too_many_for(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, XForwardedStrict([['127.0.0.1']]))
+    _setup(app, ForwardedStrict([['127.0.0.1']]))
     cl = await test_client(app)
     resp = await cl.get('/',
                         headers={'X-Forwarded-For':
@@ -212,7 +214,7 @@ async def xtest_x_forwarded_strict_untrusted_ip(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, XForwardedStrict([['20.20.20.20']]))
+    _setup(app, ForwardedStrict([['20.20.20.20']]))
     cl = await test_client(app)
     resp = await cl.get('/',
                         headers={'X-Forwarded-For': '10.10.10.10'})
@@ -226,7 +228,7 @@ async def xtest_x_forwarded_strict_whitelist(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, XForwardedStrict([['20.20.20.20']], white_paths=['/']))
+    _setup(app, ForwardedStrict([['20.20.20.20']], white_paths=['/']))
     cl = await test_client(app)
     resp = await cl.get('/',
                         headers={'X-Forwarded-For': '10.10.10.10'})

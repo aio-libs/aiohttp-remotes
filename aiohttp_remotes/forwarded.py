@@ -1,10 +1,10 @@
-from ipaddress import ip_address, ip_network
+from ipaddress import ip_address
 
 from aiohttp import web
 
 from .abc import ABC
-from .exceptions import RemoteError, IncorrectForwardedCount
-from .utils import parse_trusted_list
+from .exceptions import IncorrectForwardedCount, RemoteError
+from .utils import parse_trusted_list, remote_ip
 
 
 class ForwardedRelaxed(ABC):
@@ -50,18 +50,24 @@ class ForwardedStrict(ABC):
 
             forwarded = request.forwarded
             if len(self._trusted) != len(forwarded):
-                raise IncorrectForwardedCount(len(trusted), len(forwared))
+                raise IncorrectForwardedCount(len(self._trusted),
+                                              len(forwarded))
 
-            for elem in reversed(request.forwarded[-self._num:]):
+            peer_ip, _ = request.transport.get_extra_info('peername')
+            ips = [ip_address(peer_ip)]
+
+            for elem in reversed(request.forwarded):
                 for_ = elem.get('for')
                 if for_:
-                    overrides['remote'] = for_
+                    ips.append(ip_address(for_))
                 proto = elem.get('proto')
                 if proto is not None:
                     overrides['scheme'] = proto
                 host = elem.get('host')
                 if host is not None:
                     overrides['host'] = host
+
+                overrides['remote'] = str(remote_ip(self._trusted, ips))
 
             request = request.clone(**overrides)
             return await handler(request)

@@ -18,6 +18,7 @@ class TooManyHeaders(RemoteError):
         extra['request'] = request
         logger.error(msg, context, extra=extra)
 
+
 class IncorrectIPCount(RemoteError):
     @property
     def expected(self):
@@ -54,7 +55,6 @@ class IncorrectForwardedCount(RemoteError):
         extra = context.copy()
         extra['request'] = request
         logger.error(msg, context, extra=extra)
-
 
 
 class IncorrectProtoCount(RemoteError):
