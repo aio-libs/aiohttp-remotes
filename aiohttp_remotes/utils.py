@@ -40,13 +40,17 @@ def remote_ip(trusted, ips):
         raise IncorrectIPCount(len(trusted) + 1, ips)
     for i in range(len(trusted)):
         ip = ips[i]
-        for elem in trusted[i]:
-            if isinstance(elem, (IPv4Address, IPv6Address)):
-                if elem == ip:
-                    break
-            else:
-                if ip in elem:
-                    break
-        else:
-            raise UntrustedIP(ip, trusted[i])
+        check_ip(trusted[i], ip)
     return ips[-1]
+
+
+def check_ip(trusted, ip):
+    for elem in trusted:
+        if isinstance(elem, (IPv4Address, IPv6Address)):
+            if elem == ip:
+                break
+        else:
+            if ip in elem:
+                break
+    else:
+        raise UntrustedIP(ip, trusted)

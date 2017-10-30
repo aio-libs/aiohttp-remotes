@@ -18,7 +18,6 @@ class TooManyHeaders(RemoteError):
         extra['request'] = request
         logger.error(msg, context, extra=extra)
 
-
 class IncorrectIPCount(RemoteError):
     @property
     def expected(self):
@@ -36,6 +35,26 @@ class IncorrectIPCount(RemoteError):
         extra = context.copy()
         extra['request'] = request
         logger.error(msg, context, extra=extra)
+
+
+class IncorrectForwardedCount(RemoteError):
+    @property
+    def expected(self):
+        return self.args[0]
+
+    @property
+    def actual(self):
+        return self.args[1]
+
+    def log(self, request):
+        msg = ('Too many Forwarded values: %(actual)s, '
+               'expected %(expected)s')
+        context = {'actual': self.actual,
+                   'expected': self.expected}
+        extra = context.copy()
+        extra['request'] = request
+        logger.error(msg, context, extra=extra)
+
 
 
 class IncorrectProtoCount(RemoteError):
