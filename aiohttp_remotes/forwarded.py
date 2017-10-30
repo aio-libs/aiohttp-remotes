@@ -45,6 +45,8 @@ class ForwardedStrict(ABC):
 
     @web.middleware
     async def middleware(self, request, handler):
+        if request.path in self._white_paths:
+            return await handler(request)
         try:
             overrides = {}
 
