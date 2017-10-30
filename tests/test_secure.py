@@ -31,7 +31,7 @@ async def test_secure_ok(test_client, test_server, ssl_ctx):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, Secure())
+    await _setup(app, Secure())
     srv = await test_server(app, ssl=ssl_ctx)
     conn = aiohttp.TCPConnector(verify_ssl=False)
     cl = await test_client(srv, connector=conn)
@@ -52,7 +52,7 @@ async def test_secure_redirect(test_client, test_server, ssl_ctx):
     app = web.Application()
     app.router.add_get('/', handler)
     secure = Secure()
-    _setup(app, secure)
+    await _setup(app, secure)
     http_srv = await test_server(app)
     https_srv = await test_server(app, ssl=ssl_ctx)
     secure._redirect_url = https_srv.make_url('/')
@@ -70,7 +70,7 @@ async def test_secure_no_redirection(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, Secure(redirect=False))
+    await _setup(app, Secure(redirect=False))
     cl = await test_client(app)
     resp = await cl.get('/')
     assert resp.status == 400
@@ -83,7 +83,7 @@ async def test_no_x_frame(test_client, test_server, ssl_ctx):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, Secure(x_frame=None))
+    await _setup(app, Secure(x_frame=None))
     srv = await test_server(app, ssl=ssl_ctx)
     conn = aiohttp.TCPConnector(verify_ssl=False)
     cl = await test_client(srv, connector=conn)
@@ -103,7 +103,7 @@ async def test_no_sts(test_client, test_server, ssl_ctx):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, Secure(sts=None))
+    await _setup(app, Secure(sts=None))
     srv = await test_server(app, ssl=ssl_ctx)
     conn = aiohttp.TCPConnector(verify_ssl=False)
     cl = await test_client(srv, connector=conn)
@@ -122,7 +122,7 @@ async def test_no_cto(test_client, test_server, ssl_ctx):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, Secure(cto=None))
+    await _setup(app, Secure(cto=None))
     srv = await test_server(app, ssl=ssl_ctx)
     conn = aiohttp.TCPConnector(verify_ssl=False)
     cl = await test_client(srv, connector=conn)
@@ -142,7 +142,7 @@ async def test_no_xss(test_client, test_server, ssl_ctx):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, Secure(xss=None))
+    await _setup(app, Secure(xss=None))
     srv = await test_server(app, ssl=ssl_ctx)
     conn = aiohttp.TCPConnector(verify_ssl=False)
     cl = await test_client(srv, connector=conn)

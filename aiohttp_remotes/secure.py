@@ -31,7 +31,7 @@ class Secure(ABC):
         self._xss = xss
         self._white_paths = set(white_paths)
 
-    def setup(self, app):
+    async def setup(self, app):
         app.on_response_prepare.append(self.on_response_prepare)
         app.middlewares.append(self.middleware)
 

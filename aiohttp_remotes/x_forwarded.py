@@ -9,7 +9,7 @@ from .utils import parse_trusted_list, remote_ip
 
 class XForwardedBase(ABC):
 
-    def setup(self, app):
+    async def setup(self, app):
         app.middlewares.append(self.middleware)
 
     def get_forwarded_for(self, headers):

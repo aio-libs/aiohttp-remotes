@@ -22,7 +22,7 @@ class AllowedHosts(ABC):
         self._allowed_hosts = allowed_hosts
         self._white_paths = set(white_paths)
 
-    def setup(self, app):
+    async def setup(self, app):
         app.middlewares.append(self.middleware)
 
     @web.middleware

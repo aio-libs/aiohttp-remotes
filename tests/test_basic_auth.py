@@ -20,7 +20,7 @@ async def test_basic_auth_ok(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, BasicAuth('user', 'pass', 'realm'))
+    await _setup(app, BasicAuth('user', 'pass', 'realm'))
     cl = await test_client(app)
     resp = await cl.get('/', auth=aiohttp.BasicAuth('user', 'pass'))
     assert resp.status == 200
@@ -32,7 +32,7 @@ async def test_basic_auth_request_auth(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, BasicAuth('user', 'pass', 'realm'))
+    await _setup(app, BasicAuth('user', 'pass', 'realm'))
     cl = await test_client(app)
     resp = await cl.get('/')
     assert resp.status == 401
@@ -45,7 +45,7 @@ async def test_basic_auth_wrong_creds(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, BasicAuth('user', 'pass', 'realm'))
+    await _setup(app, BasicAuth('user', 'pass', 'realm'))
     cl = await test_client(app)
     resp = await cl.get('/', auth=aiohttp.BasicAuth('user', 'badpass'))
     assert resp.status == 401
@@ -58,7 +58,7 @@ async def test_basic_auth_malformed_req(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, BasicAuth('user', 'pass', 'realm'))
+    await _setup(app, BasicAuth('user', 'pass', 'realm'))
     cl = await test_client(app)
     resp = await cl.get('/', headers={'Authorization': 'Basic nonbase64'})
     assert resp.status == 401
@@ -71,7 +71,7 @@ async def test_basic_auth_malformed_req2(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, BasicAuth('user', 'pass', 'realm'))
+    await _setup(app, BasicAuth('user', 'pass', 'realm'))
     cl = await test_client(app)
     resp = await cl.get('/', headers={'Authorization': 'Basic nonbase64'})
     assert resp.status == 401
@@ -84,7 +84,7 @@ async def test_basic_auth_malformed_req3(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, BasicAuth('user', 'pass', 'realm'))
+    await _setup(app, BasicAuth('user', 'pass', 'realm'))
     cl = await test_client(app)
     creds = base64.encodestring(b'a:b:c').decode('utf-8')
     resp = await cl.get('/', headers={'Authorization': 'Basic '+creds})
@@ -98,7 +98,7 @@ async def test_basic_auth_white_path(test_client):
 
     app = web.Application()
     app.router.add_get('/', handler)
-    _setup(app, BasicAuth('user', 'pass', 'realm', white_paths=['/']))
+    await _setup(app, BasicAuth('user', 'pass', 'realm', white_paths=['/']))
     cl = await test_client(app)
     resp = await cl.get('/')
     assert resp.status == 200

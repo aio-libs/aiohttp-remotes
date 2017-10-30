@@ -12,7 +12,7 @@ class ForwardedRelaxed(ABC):
     def __init__(self, num=1):
         self._num = num
 
-    def setup(self, app):
+    async def setup(self, app):
         app.middlewares.append(self.middleware)
 
     @web.middleware
@@ -40,7 +40,7 @@ class ForwardedStrict(ABC):
         self._trusted = parse_trusted_list(trusted)
         self._white_paths = set(white_paths)
 
-    def setup(self, app):
+    async def setup(self, app):
         app.middlewares.append(self.middleware)
 
     @web.middleware
