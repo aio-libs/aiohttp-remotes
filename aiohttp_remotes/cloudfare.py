@@ -14,25 +14,15 @@ class CloudflareMiddleware:
         self,
         header='CF-CONNECTING-IP',
         url='https://www.cloudflare.com/ips-v4',
-        num_proxies=1,
-        upstreams=tuple(),
         whitelist=tuple(),
     ):
-        self.header = header
-        self.url = url
+        self._header = header
+        self._url = url
         self.whitelist = set(whitelist)
-
-        if num_proxies:
-            self.proxy = ProxyMiddleware(
-                num_proxies=num_proxies,
-                upstreams=upstreams,
-            )
-        else:
-            self.proxy = None
 
         self._masks = set()
 
-    async def setup(self):
+    async def setup(self, app):
         async with aiohttp.ClientSession() as session:
             async with session.get(self.url) as response:
                 text = await response.text()
@@ -45,30 +35,30 @@ class CloudflareMiddleware:
 
             self._masks.add(mask)
 
-        assert self._masks
+        if not self._masks:
+            raise RuntimeError("No masks are available")
+        app.middlewares.append(self.middleware)
 
     def is_cloudflare(self, remote_addr):
         remote_addr = ip_address(remote_addr)
 
         return any(map(lambda mask: remote_addr in mask, self.__masks))
 
-    async def middleware_factory(self, app, handler):
-        async def middleware_handler(request):
-            if request.rel_url.raw_path not in self.whitelist:
-                remote_addr, trusted = self.get_remote_addr(
-                    request.headers, request.transport,
-                )
+    @web.middleware
+    async def middleware(self, request, handler):
+        if request.rel_url.raw_path not in self.whitelist:
+            remote_addr, trusted = self.get_remote_addr(
+                request.headers, request.transport,
+            )
 
-                if not trusted:
-                    msg = 'Not cloudflare: %(remote_addr)s'
-                    context = {'remote_addr': remote_addr}
-                    logger.error(msg, context)
+            if not trusted:
+                msg = 'Not cloudflare: %(remote_addr)s'
+                context = {'remote_addr': remote_addr}
+                logger.error(msg, context)
 
-                    raise web.HTTPNotAcceptable
+                raise web.HTTPNotAcceptable
 
-            return await handler(request)
-
-        return middleware_handler
+        return await handler(request)
 
     def get_remote_addr(self, headers, transport):
         trusted = False

@@ -45,6 +45,15 @@ def test_parse_non_ip_item():
         parse_trusted_list([['garbage']])
 
 
+def test_parse_ellipsis_at_beginning():
+    ret = parse_trusted_list([['127.0.0.1'], ...])
+    assert ret == [[IPv4Address('127.0.0.1')], ...]
+
+
+def test_parse_ellipsis_after_address():
+    with pytest.raises(ValueError):
+        parse_trusted_list([..., ['127.0.0.1']])
+
 # --------------------- remote_ip -----------------------
 
 
@@ -96,3 +105,12 @@ def test_remote_ip_invalis_ips_count():
     assert ctx.value.expected == 3
     assert ctx.value.actual == [IPv4Address('10.10.10.10'),
                                 IPv4Address('20.20.20.20')]
+
+
+def test_remote_with_ellipsis():
+    ips = [ip_address('10.10.10.10'),
+           ip_address('20.20.20.20'),
+           ip_address('30.30.30.30')]
+    trusted = parse_trusted_list([['10.10.0.0/16'],
+                                  ...])
+    assert ips[-2] == remote_ip(trusted, ips)

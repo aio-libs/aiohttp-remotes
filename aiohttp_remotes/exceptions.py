@@ -12,7 +12,7 @@ class TooManyHeaders(RemoteError):
         return self.args[0]
 
     def log(self, request):
-        msg = 'Too many headers for %(header)s'
+        msg = "Too many headers for %(header)s"
         context = {'header': self.header}
         extra = context.copy()
         extra['request'] = request
@@ -29,8 +29,8 @@ class IncorrectIPCount(RemoteError):
         return self.args[1]
 
     def log(self, request):
-        msg = ('Too many X-Forwarded-For values: %(actual)s, '
-               'expected %(expected)s')
+        msg = ("Too many X-Forwarded-For values: %(actual)s, "
+               "expected %(expected)s")
         context = {'actual': self.actual,
                    'expected': self.expected}
         extra = context.copy()
@@ -48,8 +48,8 @@ class IncorrectForwardedCount(RemoteError):
         return self.args[1]
 
     def log(self, request):
-        msg = ('Too many Forwarded values: %(actual)s, '
-               'expected %(expected)s')
+        msg = ("Too many Forwarded values: %(actual)s, "
+               "expected %(expected)s")
         context = {'actual': self.actual,
                    'expected': self.expected}
         extra = context.copy()
@@ -67,8 +67,8 @@ class IncorrectProtoCount(RemoteError):
         return self.args[1]
 
     def log(self, request):
-        msg = ('Too many X-Forwarded-Proto values: %(actual)s, '
-               'expected %(expected)s')
+        msg = ("Too many X-Forwarded-Proto values: %(actual)s, "
+               "expected %(expected)s")
         context = {'actual': self.actual,
                    'expected': self.expected}
         extra = context.copy()
@@ -86,7 +86,7 @@ class UntrustedIP(RemoteError):
         return self.args[1]
 
     def log(self, request):
-        msg = 'Untrusted IP: %(ip)s, trusted: %(expected)s'
+        msg = "Untrusted IP: %(ip)s, trusted: %(expected)s"
         context = {'ip': self.ip,
                    'trusted': self.trusted}
         extra = context.copy()

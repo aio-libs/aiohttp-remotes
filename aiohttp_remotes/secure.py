@@ -18,11 +18,11 @@ class Secure(ABC):
         if redirect_url is not None:
             redirect_url = URL(redirect_url)
             if redirect_url.scheme != 'https':
-                raise ValueError('Redirection url {} should have '
-                                 'HTTPS scheme'.format(redirect_url))
+                raise ValueError("Redirection url {} should have "
+                                 "HTTPS scheme".format(redirect_url))
             if redirect_url.origin() != redirect_url:
-                raise ValueError('Redirection url {} should have no '
-                                 'path, query and fragment parts'.format(
+                raise ValueError("Redirection url {} should have no "
+                                 "path, query and fragment parts".format(
                                      redirect_url))
         self._redirect_url = redirect_url
         self._x_frame = x_frame
@@ -60,7 +60,7 @@ class Secure(ABC):
                     url = request.url.with_scheme('https').with_port(None)
                 raise web.HTTPPermanentRedirect(url)
             else:
-                msg = 'Not secure URL %(url)s'
+                msg = "Not secure URL %(url)s"
                 logger.error(msg, {'url': request.url})
                 await self.raise_error(request)
 
