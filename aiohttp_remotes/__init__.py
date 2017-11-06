@@ -11,6 +11,7 @@ __version__ = '0.0.1'
 
 from .allowed_hosts import AllowedHosts
 from .basic_auth import BasicAuth
+from .cloudflare import Cloudflare
 from .forwarded import ForwardedRelaxed, ForwardedStrict
 from .secure import Secure
 from .x_forwarded import XForwardedRelaxed, XForwardedStrict
@@ -22,6 +23,7 @@ async def setup(app, *args):
 
 
 __all__ = ('AllowedHosts', 'BasicAuth',
+           'Cloudflare',
            'ForwardedRelaxed', 'ForwardedStrict',
            'Secure',
            'XForwardedRelaxed', 'XForwardedStrict',
