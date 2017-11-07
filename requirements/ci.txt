@@ -1,5 +1,5 @@
 flake8==3.5.0
-isort
+isort==4.2.15
 pytest
 pytest-aiohttp
 pytest-cov
