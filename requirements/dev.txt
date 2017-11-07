@@ -1,5 +1,5 @@
 -r ci.txt
 -r lint.txt
-pytest-sugar
+pytest-sugar==0.9.0
 ipython
 ipdb
