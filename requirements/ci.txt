@@ -1,6 +1,6 @@
 flake8==3.5.0
 isort==4.2.15
 pytest==3.2.3
-pytest-aiohttp
+pytest-aiohttp==0.1.3
 pytest-cov
 -r prod.txt
