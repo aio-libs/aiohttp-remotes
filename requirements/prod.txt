@@ -1,2 +1,2 @@
 aiohttp==2.3.2
-flit
+flit==0.12
