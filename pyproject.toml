@@ -1,4 +1,8 @@
-[metadata]
+[build-system]
+requires = ["flit"]
+build-backend = "flit.buildapi"
+
+[tool.flit.metadata]
 module = aiohttp_remotes
 dist-name = aiohttp-remotes
 author = Ocean S.A.
