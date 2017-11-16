@@ -49,8 +49,8 @@ jobs:
       - flit publish
 
 stages:
-  - *lint
-  - test
+  - name: lint
+  - name: test
   - name: deploy
     # This will prevent deploy unless it's a tagged commit:
     if: tag IS present
