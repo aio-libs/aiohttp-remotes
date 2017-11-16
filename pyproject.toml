@@ -1,19 +1,21 @@
 [build-system]
-requires = ["flit"]
-build-backend = "flit.buildapi"
+requires=["flit"]
+build-backend="flit.buildapi"
 
 [tool.flit.metadata]
-module = "aiohttp_remotes"
-dist-name = "aiohttp-remotes"
-author = "Ocean S.A."
-author-email = "osf@wikibusiness.org"
-home-page = "https://github.com/wikibusiness/aiohttp-remotes"
-requires = ["aiohttp >= 2.3.0"]
-requires-python = ">=3.5"
-classifiers = ["License :: OSI Approved :: MIT License",
+module="aiohttp_remotes"
+# dist-name="aiohttp-remotes"
+author="Ocean S.A."
+author-email="osf@wikibusiness.org"
+home-page="https://github.com/wikibusiness/aiohttp-remotes"
+requires=["aiohttp >= 2.3.0"]
+requires-python=">=3.5"
+description-file="README.rst"
+classifiers=["License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Development Status :: 4 - Beta",
-    "Framework :: AsyncIO"]
+    "Framework :: AsyncIO",
+]
