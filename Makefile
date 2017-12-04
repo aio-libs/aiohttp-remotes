@@ -1,3 +1,5 @@
+all: test
+
 isort:
 	isort -rc aiohttp_remotes tests
 
@@ -7,3 +9,7 @@ flake:
 
 test: flake
 	pytest tests
+
+doc:
+	make -C docs html
+	@echo "Open file://`pwd`/docs/_build/html/index.html"
