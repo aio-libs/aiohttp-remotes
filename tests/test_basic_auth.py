@@ -6,14 +6,6 @@ from aiohttp_remotes import setup as _setup
 from aiohttp_remotes import BasicAuth
 
 
-def test_props():
-    m = BasicAuth('user', 'pass', 'realm', white_paths=['/path/to'])
-    assert m.username == 'user'
-    assert m.password == 'pass'
-    assert m.realm == 'realm'
-    assert m.white_paths == {'/path/to'}
-
-
 async def test_basic_auth_ok(test_client):
     async def handler(request):
         return web.Response()

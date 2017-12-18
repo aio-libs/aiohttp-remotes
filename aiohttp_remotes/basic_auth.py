@@ -17,22 +17,6 @@ class BasicAuth(ABC):
     async def setup(self, app):
         app.middlewares.append(self.middleware)
 
-    @property
-    def username(self):
-        return self._username
-
-    @property
-    def password(self):
-        return self._password
-
-    @property
-    def realm(self):
-        return self._realm
-
-    @property
-    def white_paths(self):
-        return self._white_paths
-
     async def raise_error(self, request):
         raise web.HTTPUnauthorized(
             headers={

@@ -17,9 +17,9 @@ from .secure import Secure
 from .x_forwarded import XForwardedRelaxed, XForwardedStrict
 
 
-async def setup(app, *args):
-    for arg in args:
-        await arg.setup(app)
+async def setup(app, *tools):
+    for tool in tools:
+        await tool.setup(app)
 
 
 __all__ = ('AllowedHosts', 'BasicAuth',

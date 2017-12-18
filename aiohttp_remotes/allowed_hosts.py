@@ -10,11 +10,8 @@ class ANY:
 
 class AllowedHosts(ABC):
 
-    def __init__(self, allowed_hosts=None, *, white_paths=()):
-        if allowed_hosts is None:
-            allowed_hosts = {'*'}
-        else:
-            allowed_hosts = set(allowed_hosts)
+    def __init__(self, allowed_hosts=('*',), *, white_paths=()):
+        allowed_hosts = set(allowed_hosts)
 
         if '*' in allowed_hosts:
             allowed_hosts = ANY()

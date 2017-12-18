@@ -32,7 +32,10 @@
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.intersphinx',
-    'sphinx.ext.viewcode']
+              'sphinx.ext.viewcode',
+              'alabaster',
+              'sphinxcontrib.asyncio',
+]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -173,4 +176,11 @@ texinfo_documents = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
+intersphinx_mapping = {
+    'python': ('http://docs.python.org/3', None),
+    'multidict':
+        ('https://multidict.readthedocs.io/en/stable/', None),
+    'yarl':
+        ('https://yarl.readthedocs.io/en/stable/', None),
+    'aiohttp':
+        ('https://docs.aiohttp.org/en/stable/', None)}

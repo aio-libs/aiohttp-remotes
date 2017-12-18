@@ -23,6 +23,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API" href="api.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -40,7 +41,42 @@
             
   <div class="section" id="welcome-to-aiohttp-remotes-s-documentation">
 <h1>Welcome to aiohttp-remotes’s documentation!<a class="headerlink" href="#welcome-to-aiohttp-remotes-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>The library is a set of useful tools for <a class="reference external" href="https://docs.aiohttp.org/en/stable/web_reference.html#module-aiohttp.web" title="(in aiohttp v2.3)"><code class="xref py py-mod docutils literal"><span class="pre">aiohttp.web</span></code></a> server.</p>
+<p>The full list of tools is:</p>
+<ul class="simple">
+<li><a class="reference internal" href="api.html#aiohttp_remotes.AllowedHosts" title="aiohttp_remotes.AllowedHosts"><code class="xref py py-class docutils literal"><span class="pre">AllowedHosts</span></code></a> – restrict a set of incoming connections to
+allowed hosts only.</li>
+<li><a class="reference internal" href="api.html#aiohttp_remotes.BasicAuth" title="aiohttp_remotes.BasicAuth"><code class="xref py py-class docutils literal"><span class="pre">BasicAuth</span></code></a> – protect web application by <em>basic auth</em>
+authorization.</li>
+<li><a class="reference internal" href="api.html#aiohttp_remotes.Cloudflare" title="aiohttp_remotes.Cloudflare"><code class="xref py py-class docutils literal"><span class="pre">Cloudflare</span></code></a> – make sure that web application is protected
+by CloudFlare.</li>
+<li><a class="reference internal" href="api.html#aiohttp_remotes.ForwardedRelaxed" title="aiohttp_remotes.ForwardedRelaxed"><code class="xref py py-class docutils literal"><span class="pre">ForwardedRelaxed</span></code></a> and <a class="reference internal" href="api.html#aiohttp_remotes.ForwardedStrict" title="aiohttp_remotes.ForwardedStrict"><code class="xref py py-class docutils literal"><span class="pre">ForwardedStrict</span></code></a> – process
+<code class="docutils literal"><span class="pre">Forwarded</span></code> HTTP header and modify corresponding
+<code class="xref py py-attr docutils literal"><span class="pre">scheme</span></code>, <code class="xref py py-attr docutils literal"><span class="pre">host</span></code>,
+<code class="xref py py-attr docutils literal"><span class="pre">remote</span></code> attributes in strong secured and
+relaxed modes.</li>
+<li><a class="reference internal" href="api.html#aiohttp_remotes.Secure" title="aiohttp_remotes.Secure"><code class="xref py py-class docutils literal"><span class="pre">Secure</span></code></a> – ensure that web application is handled by HTTPS
+(SSL/TLS) only, redirect plain HTTP to HTTPS automatically.</li>
+<li><a class="reference internal" href="api.html#aiohttp_remotes.XForwardedRelaxed" title="aiohttp_remotes.XForwardedRelaxed"><code class="xref py py-class docutils literal"><span class="pre">XForwardedRelaxed</span></code></a> and <a class="reference internal" href="api.html#aiohttp_remotes.XForwardedStrict" title="aiohttp_remotes.XForwardedStrict"><code class="xref py py-class docutils literal"><span class="pre">XForwardedStrict</span></code></a> – the same
+as <code class="docutils literal"><span class="pre">ForwardedRelaxed</span></code> and <code class="docutils literal"><span class="pre">ForwardedStrict</span></code> but process old-fashion
+<code class="docutils literal"><span class="pre">X-Forwarded-*</span></code> headers instead of new standard <code class="docutils literal"><span class="pre">Forwarded</span></code>.</li>
+</ul>
 <div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#setup">Setup</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#allowedhosts">AllowedHosts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#basicauth">BasicAuth</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#cloudflare">CloudFlare</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#forwarded">Forwarded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#secure">Secure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#x-forwarded">X-Forwarded</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#trusted-hosts">Trusted hosts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#white-paths">White paths</a></li>
+</ul>
+</li>
+</ul>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -68,11 +104,16 @@
 
 
 <h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="api.html" title="next chapter">API</a></li>
   </ul></li>
 </ul>
 </div>
