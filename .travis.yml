@@ -5,6 +5,11 @@ python:
   - 3.5
   - &mainstream_python 3.6
 
+addons:
+  apt:
+    packages:
+      - libenchant-dev
+
 env:
   global:
     - FLIT_USERNAME=andrew.svetlov
