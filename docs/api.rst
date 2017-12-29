@@ -18,7 +18,7 @@ Setup
 
       app = web.Application()
 
-      setup(app, Secure(), BasicAuth("user", "password", "realm"))
+      await setup(app, Secure(), BasicAuth("user", "password", "realm"))
 
    Order of tools is important: in the example redirect to HTTPS is
    performed *before* credentials check, thus login/password is sent
