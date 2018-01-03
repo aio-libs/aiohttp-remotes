@@ -51,8 +51,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'aiohttp-remotes'
-copyright = '2017, Ocean S.A.'
-author = 'Ocean S.A.'
+copyright = '2017-2018, aio-libs team'
+author = 'aio-libs team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
