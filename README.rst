@@ -23,7 +23,7 @@ The full list of tools is:
   ``X-Forwarded-*`` headers instead of new standard ``Forwarded``.
 
 
-Read https://aiohttp-remots.readthedocs.io for more information.
+Read https://aiohttp-remotes.readthedocs.io for more information.
 
 
 
