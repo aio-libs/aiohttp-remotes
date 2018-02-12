@@ -1,7 +1,7 @@
 twine==1.9.1
 flake8==3.5.0
 isort==4.3.3
-pytest==3.3.2
+pytest==3.4.0
 pytest-aiohttp==0.3.0
 pytest-cov==2.5.1
 sphinx==1.6.6
