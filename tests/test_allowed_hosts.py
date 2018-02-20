@@ -1,6 +1,6 @@
 from aiohttp import web
-from aiohttp_remotes import setup as _setup
 from aiohttp_remotes import AllowedHosts
+from aiohttp_remotes import setup as _setup
 
 
 async def test_allowed_hosts_ok(test_client):

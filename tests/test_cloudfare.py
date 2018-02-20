@@ -9,8 +9,8 @@ from aiohttp import web
 from aiohttp.abc import AbstractResolver
 from aiohttp.resolver import DefaultResolver
 from aiohttp.test_utils import unused_port
-from aiohttp_remotes import setup as _setup
 from aiohttp_remotes import Cloudflare
+from aiohttp_remotes import setup as _setup
 
 
 class FakeResolver(AbstractResolver):

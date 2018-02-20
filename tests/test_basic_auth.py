@@ -2,8 +2,8 @@ import base64
 
 import aiohttp
 from aiohttp import web
-from aiohttp_remotes import setup as _setup
 from aiohttp_remotes import BasicAuth
+from aiohttp_remotes import setup as _setup
 
 
 async def test_basic_auth_ok(test_client):

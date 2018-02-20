@@ -1,6 +1,6 @@
 from aiohttp import web
-from aiohttp_remotes import setup as _setup
 from aiohttp_remotes import ForwardedRelaxed, ForwardedStrict
+from aiohttp_remotes import setup as _setup
 
 
 async def test_forwarded_relaxed_ok(test_client):
