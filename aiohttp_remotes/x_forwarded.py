@@ -91,7 +91,8 @@ class XForwardedStrict(XForwardedBase):
             headers = request.headers
 
             forwarded_for = self.get_forwarded_for(headers)
-            peer_ip, _ = request.transport.get_extra_info('peername')
+            peer_address = request.transport.get_extra_info('peername')
+            peer_ip = peer_address[0]
             ips = [ip_address(peer_ip)] + list(reversed(forwarded_for))
             ip = remote_ip(self._trusted, ips)
             overrides['remote'] = str(ip)
