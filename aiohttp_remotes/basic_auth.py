@@ -35,7 +35,7 @@ class BasicAuth(ABC):
             try:
                 secret = auth_header[6:].encode('utf-8')
 
-                auth_decoded = base64.decodestring(secret).decode('utf-8')
+                auth_decoded = base64.decodebytes(secret).decode('utf-8')
             except (UnicodeDecodeError, UnicodeEncodeError,
                     binascii.Error):
                 await self.raise_error(request)

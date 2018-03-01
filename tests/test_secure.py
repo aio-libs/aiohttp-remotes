@@ -25,16 +25,16 @@ def ssl_ctx(here):
     return ssl_ctx
 
 
-async def test_secure_ok(test_client, test_server, ssl_ctx):
+async def test_secure_ok(aiohttp_client, aiohttp_server, ssl_ctx):
     async def handler(request):
         return web.Response()
 
     app = web.Application()
     app.router.add_get('/', handler)
     await _setup(app, Secure())
-    srv = await test_server(app, ssl=ssl_ctx)
-    conn = aiohttp.TCPConnector(verify_ssl=False)
-    cl = await test_client(srv, connector=conn)
+    srv = await aiohttp_server(app, ssl=ssl_ctx)
+    conn = aiohttp.TCPConnector(ssl=False)
+    cl = await aiohttp_client(srv, connector=conn)
     resp = await cl.get('/')
     print(resp.request_info.url)
     assert resp.status == 200
@@ -45,7 +45,7 @@ async def test_secure_ok(test_client, test_server, ssl_ctx):
     assert resp.headers['X-XSS-Protection'] == '1; mode=block'
 
 
-async def test_secure_redirect(test_client, test_server, ssl_ctx):
+async def test_secure_redirect(aiohttp_client, aiohttp_server, ssl_ctx):
     async def handler(request):
         return web.Response()
 
@@ -53,10 +53,10 @@ async def test_secure_redirect(test_client, test_server, ssl_ctx):
     app.router.add_get('/', handler)
     secure = Secure()
     await _setup(app, secure)
-    http_srv = await test_server(app)
-    https_srv = await test_server(app, ssl=ssl_ctx)
+    http_srv = await aiohttp_server(app)
+    https_srv = await aiohttp_server(app, ssl=ssl_ctx)
     secure._redirect_url = https_srv.make_url('/')
-    conn = aiohttp.TCPConnector(verify_ssl=False)
+    conn = aiohttp.TCPConnector(ssl=False)
     async with aiohttp.ClientSession(connector=conn) as cl:
         url = http_srv.make_url('/')
         resp = await cl.get(url)
@@ -64,29 +64,29 @@ async def test_secure_redirect(test_client, test_server, ssl_ctx):
         assert resp.request_info.url.scheme == 'https'
 
 
-async def test_secure_no_redirection(test_client):
+async def test_secure_no_redirection(aiohttp_client):
     async def handler(request):
         return web.Response()
 
     app = web.Application()
     app.router.add_get('/', handler)
     await _setup(app, Secure(redirect=False))
-    cl = await test_client(app)
+    cl = await aiohttp_client(app)
     resp = await cl.get('/')
     assert resp.status == 400
     assert resp.request_info.url.scheme == 'http'
 
 
-async def test_no_x_frame(test_client, test_server, ssl_ctx):
+async def test_no_x_frame(aiohttp_client, aiohttp_server, ssl_ctx):
     async def handler(request):
         return web.Response()
 
     app = web.Application()
     app.router.add_get('/', handler)
     await _setup(app, Secure(x_frame=None))
-    srv = await test_server(app, ssl=ssl_ctx)
-    conn = aiohttp.TCPConnector(verify_ssl=False)
-    cl = await test_client(srv, connector=conn)
+    srv = await aiohttp_server(app, ssl=ssl_ctx)
+    conn = aiohttp.TCPConnector(ssl=False)
+    cl = await aiohttp_client(srv, connector=conn)
     resp = await cl.get('/')
     print(resp.request_info.url)
     assert resp.status == 200
@@ -97,16 +97,16 @@ async def test_no_x_frame(test_client, test_server, ssl_ctx):
     assert resp.headers['X-XSS-Protection'] == '1; mode=block'
 
 
-async def test_no_sts(test_client, test_server, ssl_ctx):
+async def test_no_sts(aiohttp_client, aiohttp_server, ssl_ctx):
     async def handler(request):
         return web.Response()
 
     app = web.Application()
     app.router.add_get('/', handler)
     await _setup(app, Secure(sts=None))
-    srv = await test_server(app, ssl=ssl_ctx)
-    conn = aiohttp.TCPConnector(verify_ssl=False)
-    cl = await test_client(srv, connector=conn)
+    srv = await aiohttp_server(app, ssl=ssl_ctx)
+    conn = aiohttp.TCPConnector(ssl=False)
+    cl = await aiohttp_client(srv, connector=conn)
     resp = await cl.get('/')
     print(resp.request_info.url)
     assert resp.status == 200
@@ -116,16 +116,16 @@ async def test_no_sts(test_client, test_server, ssl_ctx):
     assert resp.headers['X-XSS-Protection'] == '1; mode=block'
 
 
-async def test_no_cto(test_client, test_server, ssl_ctx):
+async def test_no_cto(aiohttp_client, aiohttp_server, ssl_ctx):
     async def handler(request):
         return web.Response()
 
     app = web.Application()
     app.router.add_get('/', handler)
     await _setup(app, Secure(cto=None))
-    srv = await test_server(app, ssl=ssl_ctx)
-    conn = aiohttp.TCPConnector(verify_ssl=False)
-    cl = await test_client(srv, connector=conn)
+    srv = await aiohttp_server(app, ssl=ssl_ctx)
+    conn = aiohttp.TCPConnector(ssl=False)
+    cl = await aiohttp_client(srv, connector=conn)
     resp = await cl.get('/')
     print(resp.request_info.url)
     assert resp.status == 200
@@ -136,16 +136,16 @@ async def test_no_cto(test_client, test_server, ssl_ctx):
     assert resp.headers['X-XSS-Protection'] == '1; mode=block'
 
 
-async def test_no_xss(test_client, test_server, ssl_ctx):
+async def test_no_xss(aiohttp_client, aiohttp_server, ssl_ctx):
     async def handler(request):
         return web.Response()
 
     app = web.Application()
     app.router.add_get('/', handler)
     await _setup(app, Secure(xss=None))
-    srv = await test_server(app, ssl=ssl_ctx)
-    conn = aiohttp.TCPConnector(verify_ssl=False)
-    cl = await test_client(srv, connector=conn)
+    srv = await aiohttp_server(app, ssl=ssl_ctx)
+    conn = aiohttp.TCPConnector(ssl=False)
+    cl = await aiohttp_client(srv, connector=conn)
     resp = await cl.get('/')
     print(resp.request_info.url)
     assert resp.status == 200

@@ -85,7 +85,7 @@ def cloudfare_session(loop):
         info = await fake.start()
         resolver = FakeResolver(info, loop=asyncio.get_event_loop())
         connector = aiohttp.TCPConnector(resolver=resolver,
-                                         verify_ssl=False)
+                                         ssl=False)
 
         session = aiohttp.ClientSession(connector=connector)
         sessions.append(session)
@@ -97,7 +97,7 @@ def cloudfare_session(loop):
         loop.run_until_complete(s.close())
 
 
-async def test_cloudfare_ok(test_client, cloudfare_session):
+async def test_cloudfare_ok(aiohttp_client, cloudfare_session):
     async def handler(request):
         assert request.remote == '10.10.10.10'
 
@@ -108,12 +108,12 @@ async def test_cloudfare_ok(test_client, cloudfare_session):
     app = web.Application()
     app.router.add_get('/', handler)
     await _setup(app, Cloudflare(cf_client))
-    cl = await test_client(app)
+    cl = await aiohttp_client(app)
     resp = await cl.get('/', headers={'CF-CONNECTING-IP': '10.10.10.10'})
     assert resp.status == 200
 
 
-async def test_cloudfare_no_networks(test_client, cloudfare_session):
+async def test_cloudfare_no_networks(aiohttp_client, cloudfare_session):
     cf_client = await cloudfare_session(ipv4=[], ipv6=[])
 
     app = web.Application()
@@ -121,7 +121,7 @@ async def test_cloudfare_no_networks(test_client, cloudfare_session):
         await _setup(app, Cloudflare(cf_client))
 
 
-async def test_cloudfare_not_cloudfare(test_client, cloudfare_session):
+async def test_cloudfare_not_cloudfare(aiohttp_client, cloudfare_session):
     async def handler(request):
         return web.Response()
 
@@ -130,12 +130,12 @@ async def test_cloudfare_not_cloudfare(test_client, cloudfare_session):
     app = web.Application()
     app.router.add_get('/', handler)
     await _setup(app, Cloudflare(cf_client))
-    cl = await test_client(app)
+    cl = await aiohttp_client(app)
     resp = await cl.get('/', headers={'CF-CONNECTING-IP': '10.10.10.10'})
     assert resp.status == 400
 
 
-async def test_cloudfare_garbage_config(test_client, cloudfare_session):
+async def test_cloudfare_garbage_config(aiohttp_client, cloudfare_session):
     async def handler(request):
         assert request.remote == '10.10.10.10'
 
@@ -146,6 +146,6 @@ async def test_cloudfare_garbage_config(test_client, cloudfare_session):
     app = web.Application()
     app.router.add_get('/', handler)
     await _setup(app, Cloudflare(cf_client))
-    cl = await test_client(app)
+    cl = await aiohttp_client(app)
     resp = await cl.get('/', headers={'CF-CONNECTING-IP': '10.10.10.10'})
     assert resp.status == 200
