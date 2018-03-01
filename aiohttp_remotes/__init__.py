@@ -6,7 +6,7 @@ aiohttp.web.Request if the server is deployed behind reverse proxy.
 """
 
 
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 
 from .allowed_hosts import AllowedHosts

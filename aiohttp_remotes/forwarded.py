@@ -55,7 +55,7 @@ class ForwardedStrict(ABC):
                 raise IncorrectForwardedCount(len(self._trusted),
                                               len(forwarded))
 
-            peer_ip, _ = request.transport.get_extra_info('peername')
+            peer_ip, *_ = request.transport.get_extra_info('peername')
             ips = [ip_address(peer_ip)]
 
             for elem in reversed(request.forwarded):
