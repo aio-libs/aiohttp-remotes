@@ -212,3 +212,16 @@ async def test_x_forwarded_strict_whitelist(aiohttp_client):
     resp = await cl.get('/',
                         headers={'X-Forwarded-For': '10.10.10.10'})
     assert resp.status == 200
+
+
+async def test_x_forwarded_strict_no_forwarding(aiohttp_client):
+    async def handler(request):
+        assert request.remote == '127.0.0.1'
+        return web.Response()
+
+    app = web.Application()
+    app.router.add_get('/', handler)
+    await _setup(app, XForwardedStrict([['20.20.20.20']]))
+    cl = await aiohttp_client(app)
+    resp = await cl.get('/')
+    assert resp.status == 200
