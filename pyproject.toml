@@ -20,3 +20,7 @@ classifiers=["License :: OSI Approved :: MIT License",
     "Development Status :: 4 - Beta",
     "Framework :: AsyncIO",
 ]
+
+
+[tool.flit.metadata.urls]
+Documentation = "https://aiohttp-remotes.readthedocs.io"
