@@ -1,5 +1,5 @@
 twine==1.13.0
-flake8==3.6.0
+flake8==3.7.7
 isort==4.3.4
 pytest==4.1.1
 pytest-aiohttp==0.3.0
