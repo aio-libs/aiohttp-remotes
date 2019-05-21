@@ -1,6 +1,7 @@
 from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
 
 import pytest
+
 from aiohttp_remotes.exceptions import IncorrectIPCount, UntrustedIP
 from aiohttp_remotes.utils import parse_trusted_list, remote_ip
 
