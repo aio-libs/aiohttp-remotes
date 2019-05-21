@@ -1,4 +1,5 @@
 from aiohttp import web
+
 from aiohttp_remotes import AllowedHosts
 from aiohttp_remotes import setup as _setup
 
