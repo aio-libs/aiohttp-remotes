@@ -22,6 +22,24 @@ async def test_x_forwarded_relaxed_ok(aiohttp_client):
                                       'X-Forwarded-Host': 'example.com'})
     assert resp.status == 200
 
+async def test_x_forwarded_relaxed_ok_port(aiohttp_client):
+    async def handler(request):
+        assert request.host == 'example.com'
+        assert request.scheme == 'https'
+        assert request.secure
+        assert request.remote == '10.10.10.10'
+
+        return web.Response()
+
+    app = web.Application()
+    app.router.add_get('/', handler)
+    await _setup(app, XForwardedRelaxed())
+    cl = await aiohttp_client(app)
+    resp = await cl.get('/', headers={'X-Forwarded-For': '10.10.10.10:3456',
+                                      'X-Forwarded-Proto': 'https',
+                                      'X-Forwarded-Host': 'example.com'})
+    assert resp.status == 200
+
 
 async def test_x_forwarded_relaxed_no_forwards(aiohttp_client):
     async def handler(request):
