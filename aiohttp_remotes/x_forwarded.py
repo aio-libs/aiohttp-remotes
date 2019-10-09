@@ -21,7 +21,7 @@ class XForwardedBase(ABC):
         forwarded_for = forwarded_for[0].split(',')
         forwarded_for = [
             ip_address(addr) for addr in
-            (a.strip() for a in forwarded_for)
+            (a.strip().split(":")[0] for a in forwarded_for)
             if addr
         ]
 
