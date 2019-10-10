@@ -22,6 +22,7 @@ async def test_x_forwarded_relaxed_ok(aiohttp_client):
                                       'X-Forwarded-Host': 'example.com'})
     assert resp.status == 200
 
+
 async def test_x_forwarded_relaxed_ok_port(aiohttp_client):
     async def handler(request):
         assert request.host == 'example.com'
