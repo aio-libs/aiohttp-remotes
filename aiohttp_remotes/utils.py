@@ -10,6 +10,23 @@ MSG = ("Trusted list should be a sequence of sets "
 IP_CLASSES = (IPv4Address, IPv6Address, IPv4Network, IPv6Network)
 
 
+def parse_trusted_element(elem):
+    new_elem = []
+    for item in elem:
+        if isinstance(item, IP_CLASSES):
+            new_elem.append(item)
+            continue
+        try:
+            new_elem.append(ip_address(item))
+        except ValueError:
+            try:
+                new_elem.append(ip_network(item))
+            except ValueError:
+                raise ValueError(
+                    "{!r} is not IPv4 or IPv6 address or network".format(item))
+    return new_elem
+
+
 def parse_trusted_list(lst):
     if isinstance(lst, str) or not isinstance(lst, Sequence):
         raise TypeError(MSG)
@@ -25,20 +42,7 @@ def parse_trusted_list(lst):
                     "Ellipsis is allowed only at the end of list")
             if isinstance(elem, str) or not isinstance(elem, Container):
                 raise TypeError(MSG)
-            new_elem = []
-            for item in elem:
-                if isinstance(item, IP_CLASSES):
-                    new_elem.append(item)
-                    continue
-                try:
-                    new_elem.append(ip_address(item))
-                except ValueError:
-                    try:
-                        new_elem.append(ip_network(item))
-                    except ValueError:
-                        raise ValueError(
-                            "{!r} is not IPv4 or IPv6 address or network"
-                            .format(item))
+            new_elem = parse_trusted_element(elem)
         out.append(new_elem)
     return out
 

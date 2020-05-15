@@ -147,6 +147,39 @@ X-Forwarded
    The class does not perform any security check, use it with caution.
 
 
+.. class:: XForwardedFiltered(trusted)
+
+   The same as :class:`XForwardedRelaxed`, but rather than taking the
+   values from a specific position in the ``X-Forwarded-*`` HTTP headers,
+   this class takes a whiltelist of networks to treat as internal and
+   finds the first external IP in the ``X-Forwarded-*`` HTTP headers.  It
+   then modifies :attr:`~web.BaseRequest.scheme` and
+   :attr:`~web.BaseRequest.remote` to those values.
+
+   This class is useful when there may be an unknown number of internal
+   proxies in front of a service, so there is no simple choice of *num*
+   for :class:`XForwardedRelaxed`) and it isn't possible to strictly
+   define the sequence of proxies for :class:`XForwardedStrict`.
+
+   :attr:`~web.BaseRequest.host` is always set to the value of
+   ``X-Forwarded-Host``, if present, since it is not generally set to a
+   sequence of values separated by commas.
+
+   If ``X-Forwarded-Proto`` contains only a single value even though
+   ``X-Forwarded-For`` contains multiple values including trusted proxies,
+   that single value is used for :attr:`~web.BaseRequest.scheme`.  Some
+   proxies (such as the Kubernetes NGINX ingress) do not append schemes to
+   ``X-Forwarded-Proto``.
+
+   If all IPs in ``X-Forwarded-For`` are trusted, the left-most one is
+   used.
+
+   :param trusted: a set of IP addresses or networks, either IPv4 or IPv6,
+                   in a form accepted by :func:`~ipaddress.ip_address` or
+                   :func:`~ipaddress.ip_network`.
+
+
+
 .. class:: XForwardedStrict(trusted, *, white_paths=())
 
    Process ``X-Forwarded-*`` HTTP headers and modify corresponding
