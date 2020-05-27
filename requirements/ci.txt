@@ -4,7 +4,7 @@ isort==4.3.21
 pytest==5.4.2
 pytest-aiohttp==0.3.0
 pytest-cov==2.9.0
-sphinx==3.0.3
+sphinx==3.0.4
 sphinxcontrib-asyncio==0.2.0
 sphinxcontrib-spelling==5.0.0
 -r prod.txt
