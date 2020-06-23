@@ -6,5 +6,5 @@ pytest-aiohttp==0.3.0
 pytest-cov==2.10.0
 sphinx==3.1.1
 sphinxcontrib-asyncio==0.2.0
-sphinxcontrib-spelling==5.1.1
+sphinxcontrib-spelling==5.1.2
 -r prod.txt
