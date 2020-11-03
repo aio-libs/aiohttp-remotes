@@ -1,4 +1,3 @@
-import asyncio
 import pathlib
 import socket
 import ssl
@@ -19,10 +18,10 @@ class FakeResolver(AbstractResolver):
                    socket.AF_INET: '127.0.0.1',
                    socket.AF_INET6: '::1'}
 
-    def __init__(self, fakes, *, loop):
+    def __init__(self, fakes):
         """fakes -- dns -> port dict"""
         self._fakes = fakes
-        self._resolver = DefaultResolver(loop=loop)
+        self._resolver = DefaultResolver()
 
     async def resolve(self, host, port=0, family=socket.AF_INET):
         fake_port = self._fakes.get(host)
@@ -42,7 +41,6 @@ class FakeCloudfare:
     def __init__(self, *, ipv4=['127.0.0.0/16'], ipv6=['::/16']):
         self._ipv4 = ipv4
         self._ipv6 = ipv6
-        self.loop = asyncio.get_event_loop()
         self.app = web.Application()
         self.app.router.add_get('/ips-v4', self.ipv4)
         self.app.router.add_get('/ips-v6', self.ipv6)
@@ -80,7 +78,7 @@ def cloudfare_session(loop):
     async def go(**kwargs):
         fake = FakeCloudfare(**kwargs)
         info = await fake.start()
-        resolver = FakeResolver(info, loop=asyncio.get_event_loop())
+        resolver = FakeResolver(info)
         connector = aiohttp.TCPConnector(resolver=resolver,
                                          ssl=False)
 
