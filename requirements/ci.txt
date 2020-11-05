@@ -1,5 +1,5 @@
-twine==1.15.0
+-r prod.txt
 pytest==5.4.3
 pytest-aiohttp==0.3.0
 pytest-cov==2.10.1
--r prod.txt
+twine==1.15.0

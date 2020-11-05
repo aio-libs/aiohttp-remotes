@@ -7,7 +7,6 @@ from .abc import ABC
 
 
 class BasicAuth(ABC):
-
     def __init__(self, username, password, realm, *, white_paths=()):
         self._username = username
         self._password = password
@@ -19,9 +18,7 @@ class BasicAuth(ABC):
 
     async def raise_error(self, request):
         raise web.HTTPUnauthorized(
-            headers={
-                hdrs.WWW_AUTHENTICATE: 'Basic realm={}'.format(self._realm)
-            },
+            headers={hdrs.WWW_AUTHENTICATE: f"Basic realm={self._realm}"},
         )
 
     @web.middleware
@@ -29,18 +26,17 @@ class BasicAuth(ABC):
         if request.path not in self._white_paths:
             auth_header = request.headers.get(hdrs.AUTHORIZATION)
 
-            if auth_header is None or not auth_header.startswith('Basic '):
+            if auth_header is None or not auth_header.startswith("Basic "):
                 return await self.raise_error(request)
 
             try:
-                secret = auth_header[6:].encode('utf-8')
+                secret = auth_header[6:].encode("utf-8")
 
-                auth_decoded = base64.decodebytes(secret).decode('utf-8')
-            except (UnicodeDecodeError, UnicodeEncodeError,
-                    binascii.Error):
+                auth_decoded = base64.decodebytes(secret).decode("utf-8")
+            except (UnicodeDecodeError, UnicodeEncodeError, binascii.Error):
                 await self.raise_error(request)
 
-            credentials = auth_decoded.split(':')
+            credentials = auth_decoded.split(":")
 
             if len(credentials) != 2:
                 await self.raise_error(request)

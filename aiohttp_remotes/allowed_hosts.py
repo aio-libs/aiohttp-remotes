@@ -9,11 +9,10 @@ class ANY:
 
 
 class AllowedHosts(ABC):
-
-    def __init__(self, allowed_hosts=('*',), *, white_paths=()):
+    def __init__(self, allowed_hosts=("*",), *, white_paths=()):
         allowed_hosts = set(allowed_hosts)
 
-        if '*' in allowed_hosts:
+        if "*" in allowed_hosts:
             allowed_hosts = ANY()
 
         self._allowed_hosts = allowed_hosts
@@ -25,8 +24,8 @@ class AllowedHosts(ABC):
     @web.middleware
     async def middleware(self, request, handler):
         if (
-            request.path not in self._white_paths and
-            request.host not in self._allowed_hosts
+            request.path not in self._white_paths
+            and request.host not in self._allowed_hosts
         ):
             await self.raise_error(request)
 

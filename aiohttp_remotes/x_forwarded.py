@@ -8,7 +8,6 @@ from .utils import parse_trusted_list, remote_ip
 
 
 class XForwardedBase(ABC):
-
     async def setup(self, app):
         app.middlewares.append(self.middleware)
 
@@ -18,11 +17,9 @@ class XForwardedBase(ABC):
             return []
         if len(forwarded_for) > 1:
             raise TooManyHeaders(hdrs.X_FORWARDED_FOR)
-        forwarded_for = forwarded_for[0].split(',')
+        forwarded_for = forwarded_for[0].split(",")
         forwarded_for = [
-            ip_address(addr) for addr in
-            (a.strip() for a in forwarded_for)
-            if addr
+            ip_address(addr) for addr in (a.strip() for a in forwarded_for) if addr
         ]
 
         return forwarded_for
@@ -33,7 +30,7 @@ class XForwardedBase(ABC):
             return []
         if len(forwarded_proto) > 1:
             raise TooManyHeaders(hdrs.X_FORWARDED_PROTO)
-        forwarded_proto = forwarded_proto[0].split(',')
+        forwarded_proto = forwarded_proto[0].split(",")
         forwarded_proto = [p.strip() for p in forwarded_proto]
 
         return forwarded_proto
@@ -46,7 +43,6 @@ class XForwardedBase(ABC):
 
 
 class XForwardedRelaxed(XForwardedBase):
-
     def __init__(self, num=1):
         self._num = num
 
@@ -58,15 +54,15 @@ class XForwardedRelaxed(XForwardedBase):
 
             forwarded_for = self.get_forwarded_for(headers)
             if forwarded_for:
-                overrides['remote'] = str(forwarded_for[-self._num])
+                overrides["remote"] = str(forwarded_for[-self._num])
 
             proto = self.get_forwarded_proto(headers)
             if proto:
-                overrides['scheme'] = proto[-self._num]
+                overrides["scheme"] = proto[-self._num]
 
             host = self.get_forwarded_host(headers)
             if host is not None:
-                overrides['host'] = host
+                overrides["host"] = host
 
             request = request.clone(**overrides)
 
@@ -77,7 +73,6 @@ class XForwardedRelaxed(XForwardedBase):
 
 
 class XForwardedStrict(XForwardedBase):
-
     def __init__(self, trusted, *, white_paths=()):
         self._trusted = parse_trusted_list(trusted)
         self._white_paths = set(white_paths)
@@ -91,20 +86,20 @@ class XForwardedStrict(XForwardedBase):
             headers = request.headers
 
             forwarded_for = self.get_forwarded_for(headers)
-            peer_ip, *_ = request.transport.get_extra_info('peername')
+            peer_ip, *_ = request.transport.get_extra_info("peername")
             ips = [ip_address(peer_ip)] + list(reversed(forwarded_for))
             ip = remote_ip(self._trusted, ips)
-            overrides['remote'] = str(ip)
+            overrides["remote"] = str(ip)
 
             proto = self.get_forwarded_proto(headers)
             if proto:
                 if len(proto) > len(self._trusted):
                     raise IncorrectProtoCount(len(self._trusted), proto)
-                overrides['scheme'] = proto[0]
+                overrides["scheme"] = proto[0]
 
             host = self.get_forwarded_host(headers)
             if host is not None:
-                overrides['host'] = host
+                overrides["host"] = host
 
             request = request.clone(**overrides)
 

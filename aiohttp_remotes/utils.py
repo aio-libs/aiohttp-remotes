@@ -1,11 +1,16 @@
 from collections.abc import Container, Sequence
-from ipaddress import (IPv4Address, IPv4Network, IPv6Address, IPv6Network,
-                       ip_address, ip_network)
+from ipaddress import (
+    IPv4Address,
+    IPv4Network,
+    IPv6Address,
+    IPv6Network,
+    ip_address,
+    ip_network,
+)
 
 from .exceptions import IncorrectIPCount, UntrustedIP
 
-MSG = ("Trusted list should be a sequence of sets "
-       "with either addresses or networks.")
+MSG = "Trusted list should be a sequence of sets " "with either addresses or networks."
 
 IP_CLASSES = (IPv4Address, IPv6Address, IPv4Network, IPv6Network)
 
@@ -21,8 +26,7 @@ def parse_trusted_list(lst):
             new_elem = ...
         else:
             if has_ellipsis:
-                raise ValueError(
-                    "Ellipsis is allowed only at the end of list")
+                raise ValueError("Ellipsis is allowed only at the end of list")
             if isinstance(elem, str) or not isinstance(elem, Container):
                 raise TypeError(MSG)
             new_elem = []
@@ -37,8 +41,8 @@ def parse_trusted_list(lst):
                         new_elem.append(ip_network(item))
                     except ValueError:
                         raise ValueError(
-                            "{!r} is not IPv4 or IPv6 address or network"
-                            .format(item))
+                            f"{item!r} is not IPv4 or IPv6 address or network"
+                        )
         out.append(new_elem)
     return out
 

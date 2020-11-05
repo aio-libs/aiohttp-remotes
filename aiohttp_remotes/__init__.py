@@ -6,7 +6,7 @@ aiohttp.web.Request if the server is deployed behind reverse proxy.
 """
 
 
-__version__ = '1.0.0a0'
+__version__ = "1.0.0a0"
 
 
 from .allowed_hosts import AllowedHosts
@@ -22,9 +22,14 @@ async def setup(app, *tools):
         await tool.setup(app)
 
 
-__all__ = ('AllowedHosts', 'BasicAuth',
-           'Cloudflare',
-           'ForwardedRelaxed', 'ForwardedStrict',
-           'Secure',
-           'XForwardedRelaxed', 'XForwardedStrict',
-           'setup')
+__all__ = (
+    "AllowedHosts",
+    "BasicAuth",
+    "Cloudflare",
+    "ForwardedRelaxed",
+    "ForwardedStrict",
+    "Secure",
+    "XForwardedRelaxed",
+    "XForwardedStrict",
+    "setup",
+)

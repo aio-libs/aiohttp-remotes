@@ -8,7 +8,6 @@ from .log import logger
 
 
 class Cloudflare(ABC):
-
     def __init__(self, client=None):
         self._ip_networks = set()
         self._client = client
@@ -30,11 +29,9 @@ class Cloudflare(ABC):
         else:
             client = aiohttp.ClientSession()  # pragma: no cover
         try:
-            async with client.get(
-                    'https://www.cloudflare.com/ips-v4') as response:
+            async with client.get("https://www.cloudflare.com/ips-v4") as response:
                 self._ip_networks |= self._parse_mask(await response.text())
-            async with client.get(
-                    'https://www.cloudflare.com/ips-v6') as response:
+            async with client.get("https://www.cloudflare.com/ips-v6") as response:
                 self._ip_networks |= self._parse_mask(await response.text())
         finally:
             if self._client is None:  # pragma: no cover
@@ -50,12 +47,11 @@ class Cloudflare(ABC):
 
         for network in self._ip_networks:
             if remote_ip in network:
-                request = request.clone(
-                    remote=request.headers['CF-CONNECTING-IP'])
+                request = request.clone(remote=request.headers["CF-CONNECTING-IP"])
                 return await handler(request)
 
         msg = "Not cloudflare: %(remote_ip)s"
-        context = {'remote_ip': remote_ip}
+        context = {"remote_ip": remote_ip}
         logger.error(msg, context)
 
         await self.raise_error(request)

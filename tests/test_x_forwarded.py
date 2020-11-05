@@ -1,44 +1,47 @@
 from aiohttp import web
-
-from aiohttp_remotes import XForwardedRelaxed, XForwardedStrict
-from aiohttp_remotes import setup as _setup
+from aiohttp_remotes import XForwardedRelaxed, XForwardedStrict, setup as _setup
 
 
 async def test_x_forwarded_relaxed_ok(aiohttp_client):
     async def handler(request):
-        assert request.host == 'example.com'
-        assert request.scheme == 'https'
+        assert request.host == "example.com"
+        assert request.scheme == "https"
         assert request.secure
-        assert request.remote == '10.10.10.10'
+        assert request.remote == "10.10.10.10"
 
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
+    app.router.add_get("/", handler)
     await _setup(app, XForwardedRelaxed())
     cl = await aiohttp_client(app)
-    resp = await cl.get('/', headers={'X-Forwarded-For': '10.10.10.10',
-                                      'X-Forwarded-Proto': 'https',
-                                      'X-Forwarded-Host': 'example.com'})
+    resp = await cl.get(
+        "/",
+        headers={
+            "X-Forwarded-For": "10.10.10.10",
+            "X-Forwarded-Proto": "https",
+            "X-Forwarded-Host": "example.com",
+        },
+    )
     assert resp.status == 200
 
 
 async def test_x_forwarded_relaxed_no_forwards(aiohttp_client):
     async def handler(request):
-        url = cl.make_url('/')
-        host = url.host + ':' + str(url.port)
+        url = cl.make_url("/")
+        host = url.host + ":" + str(url.port)
         assert request.host == host
-        assert request.scheme == 'http'
+        assert request.scheme == "http"
         assert not request.secure
-        assert request.remote == '127.0.0.1'
+        assert request.remote == "127.0.0.1"
 
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
+    app.router.add_get("/", handler)
     await _setup(app, XForwardedRelaxed())
     cl = await aiohttp_client(app)
-    resp = await cl.get('/')
+    resp = await cl.get("/")
     assert resp.status == 200
 
 
@@ -47,13 +50,18 @@ async def test_x_forwarded_relaxed_multiple_for(aiohttp_client):
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
+    app.router.add_get("/", handler)
     await _setup(app, XForwardedRelaxed())
     cl = await aiohttp_client(app)
-    resp = await cl.get('/', headers=[('X-Forwarded-For', '10.10.10.10'),
-                                      ('X-Forwarded-For', '20.20.20.20'),
-                                      ('X-Forwarded-Proto', 'https'),
-                                      ('X-Forwarded-Host', 'example.com')])
+    resp = await cl.get(
+        "/",
+        headers=[
+            ("X-Forwarded-For", "10.10.10.10"),
+            ("X-Forwarded-For", "20.20.20.20"),
+            ("X-Forwarded-Proto", "https"),
+            ("X-Forwarded-Host", "example.com"),
+        ],
+    )
     assert resp.status == 400
 
 
@@ -62,13 +70,18 @@ async def test_x_forwarded_relaxed_multiple_proto(aiohttp_client):
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
+    app.router.add_get("/", handler)
     await _setup(app, XForwardedRelaxed())
     cl = await aiohttp_client(app)
-    resp = await cl.get('/', headers=[('X-Forwarded-For', '10.10.10.10'),
-                                      ('X-Forwarded-Proto', 'http'),
-                                      ('X-Forwarded-Proto', 'https'),
-                                      ('X-Forwarded-Host', 'example.com')])
+    resp = await cl.get(
+        "/",
+        headers=[
+            ("X-Forwarded-For", "10.10.10.10"),
+            ("X-Forwarded-Proto", "http"),
+            ("X-Forwarded-Proto", "https"),
+            ("X-Forwarded-Host", "example.com"),
+        ],
+    )
     assert resp.status == 400
 
 
@@ -77,86 +90,104 @@ async def test_x_forwarded_relaxed_multiple_host(aiohttp_client):
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
+    app.router.add_get("/", handler)
     await _setup(app, XForwardedRelaxed())
     cl = await aiohttp_client(app)
-    resp = await cl.get('/', headers=[('X-Forwarded-For', '10.10.10.10'),
-                                      ('X-Forwarded-Proto', 'http'),
-                                      ('X-Forwarded-Host', 'example.org'),
-                                      ('X-Forwarded-Host', 'example.com')])
+    resp = await cl.get(
+        "/",
+        headers=[
+            ("X-Forwarded-For", "10.10.10.10"),
+            ("X-Forwarded-Proto", "http"),
+            ("X-Forwarded-Host", "example.org"),
+            ("X-Forwarded-Host", "example.com"),
+        ],
+    )
     assert resp.status == 400
 
 
 async def test_x_forwarded_strict_ok(aiohttp_client):
     async def handler(request):
-        assert request.host == 'example.com'
-        assert request.scheme == 'https'
+        assert request.host == "example.com"
+        assert request.scheme == "https"
         assert request.secure
-        assert request.remote == '10.10.10.10'
+        assert request.remote == "10.10.10.10"
 
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
-    await _setup(app, XForwardedStrict([['127.0.0.1']]))
+    app.router.add_get("/", handler)
+    await _setup(app, XForwardedStrict([["127.0.0.1"]]))
     cl = await aiohttp_client(app)
-    resp = await cl.get('/', headers={'X-Forwarded-For': '10.10.10.10',
-                                      'X-Forwarded-Proto': 'https',
-                                      'X-Forwarded-Host': 'example.com'})
+    resp = await cl.get(
+        "/",
+        headers={
+            "X-Forwarded-For": "10.10.10.10",
+            "X-Forwarded-Proto": "https",
+            "X-Forwarded-Host": "example.com",
+        },
+    )
     assert resp.status == 200
 
 
 async def test_x_forwarded_strict_no_proto(aiohttp_client):
     async def handler(request):
-        assert request.host == 'example.com'
-        assert request.scheme == 'http'
-        assert request.remote == '10.10.10.10'
+        assert request.host == "example.com"
+        assert request.scheme == "http"
+        assert request.remote == "10.10.10.10"
 
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
-    await _setup(app, XForwardedStrict([['127.0.0.1']]))
+    app.router.add_get("/", handler)
+    await _setup(app, XForwardedStrict([["127.0.0.1"]]))
     cl = await aiohttp_client(app)
-    resp = await cl.get('/', headers={'X-Forwarded-For': '10.10.10.10',
-                                      'X-Forwarded-Host': 'example.com'})
+    resp = await cl.get(
+        "/",
+        headers={"X-Forwarded-For": "10.10.10.10", "X-Forwarded-Host": "example.com"},
+    )
     assert resp.status == 200
 
 
 async def test_x_forwarded_strict_no_host(aiohttp_client):
     async def handler(request):
-        assert request.host.startswith('127.0.0.1:')
-        assert request.scheme == 'https'
-        assert request.remote == '10.10.10.10'
+        assert request.host.startswith("127.0.0.1:")
+        assert request.scheme == "https"
+        assert request.remote == "10.10.10.10"
 
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
-    await _setup(app, XForwardedStrict([['127.0.0.1']]))
+    app.router.add_get("/", handler)
+    await _setup(app, XForwardedStrict([["127.0.0.1"]]))
     cl = await aiohttp_client(app)
-    resp = await cl.get('/', headers={'X-Forwarded-For': '10.10.10.10',
-                                      'X-Forwarded-Proto': 'https'})
+    resp = await cl.get(
+        "/", headers={"X-Forwarded-For": "10.10.10.10", "X-Forwarded-Proto": "https"}
+    )
     assert resp.status == 200
 
 
 async def test_x_forwarded_strict_too_many_headers(aiohttp_client):
     async def handler(request):
-        assert request.host == 'example.com'
-        assert request.scheme == 'https'
+        assert request.host == "example.com"
+        assert request.scheme == "https"
         assert request.secure
-        assert request.remote == '10.10.10.10'
+        assert request.remote == "10.10.10.10"
 
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
-    await _setup(app, XForwardedStrict([['127.0.0.1']]))
+    app.router.add_get("/", handler)
+    await _setup(app, XForwardedStrict([["127.0.0.1"]]))
     cl = await aiohttp_client(app)
-    resp = await cl.get('/', headers=[('X-Forwarded-For', '10.10.10.10'),
-                                      ('X-Forwarded-Proto', 'https'),
-                                      ('X-Forwarded-Proto', 'http'),
-                                      ('X-Forwarded-Host', 'example.com')])
+    resp = await cl.get(
+        "/",
+        headers=[
+            ("X-Forwarded-For", "10.10.10.10"),
+            ("X-Forwarded-Proto", "https"),
+            ("X-Forwarded-Proto", "http"),
+            ("X-Forwarded-Host", "example.com"),
+        ],
+    )
     assert resp.status == 400
 
 
@@ -165,12 +196,16 @@ async def test_x_forwarded_strict_too_many_protos(aiohttp_client):
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
-    await _setup(app, XForwardedStrict([['127.0.0.1']]))
+    app.router.add_get("/", handler)
+    await _setup(app, XForwardedStrict([["127.0.0.1"]]))
     cl = await aiohttp_client(app)
-    resp = await cl.get('/',
-                        headers={'X-Forwarded-For': '10.10.10.10',
-                                 'X-Forwarded-Proto': 'https, http, https'})
+    resp = await cl.get(
+        "/",
+        headers={
+            "X-Forwarded-For": "10.10.10.10",
+            "X-Forwarded-Proto": "https, http, https",
+        },
+    )
     assert resp.status == 400
 
 
@@ -179,12 +214,10 @@ async def test_x_forwarded_strict_too_many_for(aiohttp_client):
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
-    await _setup(app, XForwardedStrict([['127.0.0.1']]))
+    app.router.add_get("/", handler)
+    await _setup(app, XForwardedStrict([["127.0.0.1"]]))
     cl = await aiohttp_client(app)
-    resp = await cl.get('/',
-                        headers={'X-Forwarded-For':
-                                 '10.10.10.10, 11.11.11.11'})
+    resp = await cl.get("/", headers={"X-Forwarded-For": "10.10.10.10, 11.11.11.11"})
     assert resp.status == 400
 
 
@@ -193,23 +226,21 @@ async def test_x_forwarded_strict_untrusted_ip(aiohttp_client):
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
-    await _setup(app, XForwardedStrict([['20.20.20.20']]))
+    app.router.add_get("/", handler)
+    await _setup(app, XForwardedStrict([["20.20.20.20"]]))
     cl = await aiohttp_client(app)
-    resp = await cl.get('/',
-                        headers={'X-Forwarded-For': '10.10.10.10'})
+    resp = await cl.get("/", headers={"X-Forwarded-For": "10.10.10.10"})
     assert resp.status == 400
 
 
 async def test_x_forwarded_strict_whitelist(aiohttp_client):
     async def handler(request):
-        assert request.remote == '127.0.0.1'
+        assert request.remote == "127.0.0.1"
         return web.Response()
 
     app = web.Application()
-    app.router.add_get('/', handler)
-    await _setup(app, XForwardedStrict([['20.20.20.20']], white_paths=['/']))
+    app.router.add_get("/", handler)
+    await _setup(app, XForwardedStrict([["20.20.20.20"]], white_paths=["/"]))
     cl = await aiohttp_client(app)
-    resp = await cl.get('/',
-                        headers={'X-Forwarded-For': '10.10.10.10'})
+    resp = await cl.get("/", headers={"X-Forwarded-For": "10.10.10.10"})
     assert resp.status == 200
