@@ -25,9 +25,10 @@ The full list of tools is:
   relaxed modes.
 * :class:`Secure` -- ensure that web application is handled by HTTPS
   (SSL/TLS) only, redirect plain HTTP to HTTPS automatically.
-* :class:`XForwardedRelaxed` and :class:`XForwardedStrict` -- the same
-  as ``ForwardedRelaxed`` and ``ForwardedStrict`` but process old-fashion
-  ``X-Forwarded-*`` headers instead of new standard ``Forwarded``.
+* :class:`XForwardedRelaxed`, :class:`XForwardedFiltered`, and
+  :class:`XForwardedStrict` -- the same as ``ForwardedRelaxed`` and
+  ``ForwardedStrict`` but process old-fashion ``X-Forwarded-*`` headers
+  instead of new standard ``Forwarded``.
 
 .. toctree::
    :maxdepth: 2

@@ -1,10 +1,11 @@
+from collections.abc import Container
 from ipaddress import ip_address
 
 from aiohttp import hdrs, web
 
 from .abc import ABC
-from .exceptions import IncorrectProtoCount, RemoteError, TooManyHeaders
-from .utils import parse_trusted_list, remote_ip
+from .exceptions import IncorrectProtoCount, RemoteError, TooManyHeaders, UntrustedIP
+from .utils import check_ip, parse_trusted_element, parse_trusted_list, remote_ip
 
 
 class XForwardedBase(ABC):
@@ -70,6 +71,60 @@ class XForwardedRelaxed(XForwardedBase):
         except RemoteError as exc:
             exc.log(request)
             await self.raise_error(request)
+
+
+class XForwardedFiltered(XForwardedBase):
+    def __init__(self, trusted):
+        if isinstance(trusted, str) or not isinstance(trusted, Container):
+            raise TypeError("Trusted list should be a set of aaddresses or networks.")
+        self._trusted = parse_trusted_element(trusted)
+
+    @web.middleware
+    async def middleware(self, request, handler):
+        try:
+            overrides = {}
+            headers = request.headers
+
+            forwarded_for = list(reversed(self.get_forwarded_for(headers)))
+            if not forwarded_for:
+                return await handler(request)
+
+            index = 0
+            for ip in forwarded_for:
+                try:
+                    check_ip(self._trusted, ip)
+                    index += 1
+                    continue
+                except UntrustedIP:
+                    overrides["remote"] = str(ip)
+                    break
+
+            # If all the IP addresses are from trusted networks, take the
+            # left-most.
+            if "remote" not in overrides:
+                index = -1
+                overrides["remote"] = str(forwarded_for[-1])
+
+            # Ideally this should take the scheme corresponding to the entry
+            # in X-Forwarded-For that was chosen, but some proxies (the
+            # Kubernetes NGINX ingress, for example) only retain one element
+            # in X-Forwarded-Proto.  In that case, use what we have.
+            proto = list(reversed(self.get_forwarded_proto(headers)))
+            if proto:
+                if index >= len(proto):
+                    index = -1
+                overrides["scheme"] = proto[index]
+
+            host = self.get_forwarded_host(headers)
+            if host is not None:
+                overrides["host"] = host
+
+            request = request.clone(**overrides)
+            return await handler(request)
+
+        except RemoteError as exc:
+            exc.log(request)
+            return await self.raise_error(request)
 
 
 class XForwardedStrict(XForwardedBase):

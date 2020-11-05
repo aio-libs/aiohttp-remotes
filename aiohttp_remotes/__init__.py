@@ -14,7 +14,7 @@ from .basic_auth import BasicAuth
 from .cloudflare import Cloudflare
 from .forwarded import ForwardedRelaxed, ForwardedStrict
 from .secure import Secure
-from .x_forwarded import XForwardedRelaxed, XForwardedStrict
+from .x_forwarded import XForwardedFiltered, XForwardedRelaxed, XForwardedStrict
 
 
 async def setup(app, *tools):
@@ -29,6 +29,7 @@ __all__ = (
     "ForwardedRelaxed",
     "ForwardedStrict",
     "Secure",
+    "XForwardedFiltered",
     "XForwardedRelaxed",
     "XForwardedStrict",
     "setup",
