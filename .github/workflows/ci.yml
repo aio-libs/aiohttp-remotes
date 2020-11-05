@@ -76,6 +76,9 @@ jobs:
       uses: py-actions/py-dependency-install@v2
       with:
         path: requirements/ci.txt
+    - name: Install itself
+      run: |
+        pip install .
     - name: Run unittests
       env:
         COLOR: 'yes'
@@ -105,6 +108,9 @@ jobs:
       uses: py-actions/py-dependency-install@v2
       with:
         path: requirements/ci.txt
+    - name: Install itself
+      run: |
+        pip install .
     - name: PyPI upload
       env:
         FLIT_USERNAME: __token__
