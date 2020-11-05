@@ -1,10 +1,5 @@
 twine==1.15.0
-flake8==3.8.4
-isort==4.3.21
 pytest==5.4.3
 pytest-aiohttp==0.3.0
 pytest-cov==2.10.1
-sphinx==3.3.0
-sphinxcontrib-asyncio==0.3.0
-sphinxcontrib-spelling==7.0.1
 -r prod.txt
