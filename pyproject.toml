@@ -8,16 +8,17 @@ module="aiohttp_remotes"
 author="Andrew Svetlov"
 author-email="andrew.svetlov@gmail.com"
 home-page="https://github.com/aio-libs/aiohttp-remotes"
-requires=["aiohttp >= 2.3.0"]
-requires-python=">=3.5"
+requires=["aiohttp >= 3.6.3"]
+requires-python=">=3.6"
 description-file="README.rst"
 classifiers=["License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.5",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Topic :: Software Development :: Libraries :: Python Modules",
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Framework :: AsyncIO",
 ]
 
