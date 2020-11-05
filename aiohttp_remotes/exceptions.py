@@ -80,7 +80,7 @@ class UntrustedIP(RemoteError):
         return self.args[1]
 
     def log(self, request):
-        msg = "Untrusted IP: %(ip)s, trusted: %(expected)s"
+        msg = "Untrusted IP: %(ip)s, trusted: %(trusted)s"
         context = {"ip": self.ip, "trusted": self.trusted}
         extra = context.copy()
         extra["request"] = request

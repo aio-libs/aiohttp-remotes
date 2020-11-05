@@ -23,3 +23,4 @@ doc:
 setup init:
 	pip install -r requirements/dev.txt
 	pre-commit install
+	flit install -s
