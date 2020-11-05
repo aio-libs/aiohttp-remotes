@@ -1,4 +1,4 @@
-from collections.abc import Container, Sequence
+import builtins
 from ipaddress import (
     IPv4Address,
     IPv4Network,
@@ -7,15 +7,27 @@ from ipaddress import (
     ip_address,
     ip_network,
 )
+from typing import Iterable, List, Sequence, Union, cast
 
-from .exceptions import IncorrectIPCount, UntrustedIP
+from .exceptions import (
+    IncorrectIPCount,
+    IPAddress,
+    IPNetwork,
+    IPRule,
+    Trusted,
+    UntrustedIP,
+)
+
+Elem = Iterable[Union[str, IPAddress, IPNetwork]]
+ElemEllpisis = Union["builtins.ellipsis", Elem]
+TrustedOrig = Iterable[ElemEllpisis]
 
 MSG = "Trusted list should be a sequence of sets " "with either addresses or networks."
 
 IP_CLASSES = (IPv4Address, IPv6Address, IPv4Network, IPv6Network)
 
 
-def parse_trusted_element(elem):
+def parse_trusted_element(elem: Elem) -> List[Union[IPAddress, IPNetwork]]:
     new_elem = []
     for item in elem:
         if isinstance(item, IP_CLASSES):
@@ -31,26 +43,27 @@ def parse_trusted_element(elem):
     return new_elem
 
 
-def parse_trusted_list(lst):
+def parse_trusted_list(lst: TrustedOrig) -> Trusted:
     if isinstance(lst, str) or not isinstance(lst, Sequence):
         raise TypeError(MSG)
     out = []
     has_ellipsis = False
     for elem in lst:
+        new_elem: ElemEllpisis
         if elem is ...:
             has_ellipsis = True
             new_elem = ...
         else:
             if has_ellipsis:
                 raise ValueError("Ellipsis is allowed only at the end of list")
-            if isinstance(elem, str) or not isinstance(elem, Container):
+            if isinstance(elem, str) or not isinstance(elem, Iterable):
                 raise TypeError(MSG)
             new_elem = parse_trusted_element(elem)
         out.append(new_elem)
     return out
 
 
-def remote_ip(trusted, ips):
+def remote_ip(trusted: Trusted, ips: Sequence[IPAddress]) -> IPAddress:
     if len(trusted) + 1 != len(ips):
         raise IncorrectIPCount(len(trusted) + 1, ips)
     for i in range(len(trusted)):
@@ -58,11 +71,12 @@ def remote_ip(trusted, ips):
         tr = trusted[i]
         if tr is ...:
             return ip
-        check_ip(tr, ip)
+        # cast drops previously handled ... type
+        check_ip(cast(Sequence[IPRule], tr), ip)
     return ips[-1]
 
 
-def check_ip(trusted, ip):
+def check_ip(trusted: Sequence[IPRule], ip: IPAddress) -> None:
     for elem in trusted:
         if isinstance(elem, (IPv4Address, IPv6Address)):
             if elem == ip:

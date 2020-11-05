@@ -1,3 +1,5 @@
+from typing import Awaitable, Callable, Iterable, Optional, Union
+
 from yarl import URL
 
 from aiohttp import web
@@ -11,13 +13,13 @@ class Secure(ABC):
     def __init__(
         self,
         *,
-        redirect=True,
-        redirect_url=None,
-        x_frame="DENY",
-        sts="max-age=31536000; includeSubDomains",
-        cto="nosniff",
-        xss="1; mode=block",
-        white_paths=()
+        redirect: bool = True,
+        redirect_url: Optional[Union[str, URL]] = None,
+        x_frame: Optional[str] = "DENY",
+        sts: Optional[str] = "max-age=31536000; includeSubDomains",
+        cto: Optional[str] = "nosniff",
+        xss: Optional[str] = "1; mode=block",
+        white_paths: Iterable[str] = ()
     ):
         self._redirect = redirect
         if redirect_url is not None:
@@ -39,11 +41,13 @@ class Secure(ABC):
         self._xss = xss
         self._white_paths = set(white_paths)
 
-    async def setup(self, app):
+    async def setup(self, app: web.Application) -> None:
         app.on_response_prepare.append(self.on_response_prepare)
         app.middlewares.append(self.middleware)
 
-    async def on_response_prepare(self, request, response):
+    async def on_response_prepare(
+        self, request: web.Request, response: web.StreamResponse
+    ) -> None:
         x_frame = self._x_frame
         if x_frame is not None:
             response.headers.setdefault("X-Frame-Options", x_frame)
@@ -58,7 +62,11 @@ class Secure(ABC):
             response.headers.setdefault("X-XSS-Protection", xss)
 
     @web.middleware
-    async def middleware(self, request, handler):
+    async def middleware(
+        self,
+        request: web.Request,
+        handler: Callable[[web.Request], Awaitable[web.StreamResponse]],
+    ) -> web.StreamResponse:
         whitepath = request.path in self._white_paths
         if not whitepath and not request.secure:
             if self._redirect:
@@ -70,6 +78,6 @@ class Secure(ABC):
             else:
                 msg = "Not secure URL %(url)s"
                 logger.error(msg, {"url": request.url})
-                await self.raise_error(request)
+                return await self.raise_error(request)
 
         return await handler(request)

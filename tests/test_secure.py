@@ -1,14 +1,25 @@
+import ssl
+from typing import Awaitable, Callable
+
 import pytest
 from yarl import URL
 
 import aiohttp
 from aiohttp import web
-from aiohttp.test_utils import make_mocked_request
+from aiohttp.test_utils import TestClient, TestServer, make_mocked_request
 from aiohttp_remotes import Secure, setup as _setup
 
+_Server = Callable[..., Awaitable[TestServer]]
+_Client = Callable[..., Awaitable[TestClient]]
 
-async def test_secure_ok(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ctx):
-    async def handler(request):
+
+async def test_secure_ok(
+    aiohttp_client: _Client,
+    aiohttp_server: _Server,
+    ssl_ctx: ssl.SSLContext,
+    client_ssl_ctx: ssl.SSLContext,
+) -> None:
+    async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
     app = web.Application()
@@ -27,8 +38,13 @@ async def test_secure_ok(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ctx
     assert resp.headers["X-XSS-Protection"] == "1; mode=block"
 
 
-async def test_secure_redirect(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ctx):
-    async def handler(request):
+async def test_secure_redirect(
+    aiohttp_client: _Client,
+    aiohttp_server: _Server,
+    ssl_ctx: ssl.SSLContext,
+    client_ssl_ctx: ssl.SSLContext,
+) -> None:
+    async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
     app = web.Application()
@@ -46,8 +62,8 @@ async def test_secure_redirect(aiohttp_client, aiohttp_server, ssl_ctx, client_s
         assert resp.request_info.url.scheme == "https"
 
 
-async def test_secure_no_redirection(aiohttp_client):
-    async def handler(request):
+async def test_secure_no_redirection(aiohttp_client: _Client) -> None:
+    async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
     app = web.Application()
@@ -59,8 +75,13 @@ async def test_secure_no_redirection(aiohttp_client):
     assert resp.request_info.url.scheme == "http"
 
 
-async def test_no_x_frame(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ctx):
-    async def handler(request):
+async def test_no_x_frame(
+    aiohttp_client: _Client,
+    aiohttp_server: _Server,
+    ssl_ctx: ssl.SSLContext,
+    client_ssl_ctx: ssl.SSLContext,
+) -> None:
+    async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
     app = web.Application()
@@ -79,8 +100,13 @@ async def test_no_x_frame(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ct
     assert resp.headers["X-XSS-Protection"] == "1; mode=block"
 
 
-async def test_no_sts(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ctx):
-    async def handler(request):
+async def test_no_sts(
+    aiohttp_client: _Client,
+    aiohttp_server: _Server,
+    ssl_ctx: ssl.SSLContext,
+    client_ssl_ctx: ssl.SSLContext,
+) -> None:
+    async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
     app = web.Application()
@@ -98,8 +124,13 @@ async def test_no_sts(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ctx):
     assert resp.headers["X-XSS-Protection"] == "1; mode=block"
 
 
-async def test_no_cto(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ctx):
-    async def handler(request):
+async def test_no_cto(
+    aiohttp_client: _Client,
+    aiohttp_server: _Server,
+    ssl_ctx: ssl.SSLContext,
+    client_ssl_ctx: ssl.SSLContext,
+) -> None:
+    async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
     app = web.Application()
@@ -118,8 +149,13 @@ async def test_no_cto(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ctx):
     assert resp.headers["X-XSS-Protection"] == "1; mode=block"
 
 
-async def test_no_xss(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ctx):
-    async def handler(request):
+async def test_no_xss(
+    aiohttp_client: _Client,
+    aiohttp_server: _Server,
+    ssl_ctx: ssl.SSLContext,
+    client_ssl_ctx: ssl.SSLContext,
+) -> None:
+    async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
     app = web.Application()
@@ -138,10 +174,10 @@ async def test_no_xss(aiohttp_client, aiohttp_server, ssl_ctx, client_ssl_ctx):
     assert "X-XSS-Protection" not in resp.headers
 
 
-async def test_default_redirect():
+async def test_default_redirect() -> None:
     s = Secure()
 
-    async def handler(request):
+    async def handler(request: web.Request) -> web.Response:
         pass
 
     req = make_mocked_request("GET", "/path", headers={"Host": "example.com"})
@@ -150,15 +186,15 @@ async def test_default_redirect():
     assert ctx.value.location == URL("https://example.com/path")
 
 
-def test_non_https_redirect_url():
+def test_non_https_redirect_url() -> None:
     with pytest.raises(ValueError):
         Secure(redirect_url="http://example.com")
 
 
-def test_redirect_url_with_path():
+def test_redirect_url_with_path() -> None:
     with pytest.raises(ValueError):
         Secure(redirect_url="https://example.com/path/to")
 
 
-def test_redirect_url_ok():
+def test_redirect_url_ok() -> None:
     Secure(redirect_url="https://example.com")

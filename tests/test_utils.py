@@ -6,52 +6,52 @@ from aiohttp_remotes.exceptions import IncorrectIPCount, UntrustedIP
 from aiohttp_remotes.utils import parse_trusted_list, remote_ip
 
 
-def test_parse_str():
+def test_parse_str() -> None:
     with pytest.raises(TypeError):
         parse_trusted_list("127.0.0.1")
 
 
-def test_parse_non_sequence():
+def test_parse_non_sequence() -> None:
     with pytest.raises(TypeError):
-        parse_trusted_list(1)
+        parse_trusted_list(1)  # type: ignore[arg-type]
 
 
-def test_parse_non_sequence_of_containers():
+def test_parse_non_sequence_of_containers() -> None:
     with pytest.raises(TypeError):
-        parse_trusted_list([1])
+        parse_trusted_list([1])  # type: ignore
 
 
-def test_parse_ipv4():
+def test_parse_ipv4() -> None:
     ret = parse_trusted_list([[IPv4Address("127.0.0.1")]])
     assert ret == [[IPv4Address("127.0.0.1")]]
 
 
-def test_parse_ipv6():
+def test_parse_ipv6() -> None:
     ret = parse_trusted_list([[IPv6Address("::1")]])
     assert ret == [[IPv6Address("::1")]]
 
 
-def test_parse_ipv4_str():
+def test_parse_ipv4_str() -> None:
     ret = parse_trusted_list([["127.0.0.1"]])
     assert ret == [[IPv4Address("127.0.0.1")]]
 
 
-def test_parse_ipv6_str():
+def test_parse_ipv6_str() -> None:
     ret = parse_trusted_list([["::1"]])
     assert ret == [[IPv6Address("::1")]]
 
 
-def test_parse_non_ip_item():
+def test_parse_non_ip_item() -> None:
     with pytest.raises(ValueError):
         parse_trusted_list([["garbage"]])
 
 
-def test_parse_ellipsis_at_beginning():
+def test_parse_ellipsis_at_beginning() -> None:
     ret = parse_trusted_list([["127.0.0.1"], ...])
     assert ret == [[IPv4Address("127.0.0.1")], ...]
 
 
-def test_parse_ellipsis_after_address():
+def test_parse_ellipsis_after_address() -> None:
     with pytest.raises(ValueError):
         parse_trusted_list([..., ["127.0.0.1"]])
 
@@ -59,12 +59,12 @@ def test_parse_ellipsis_after_address():
 # --------------------- remote_ip -----------------------
 
 
-def test_remote_ip_no_trusted():
+def test_remote_ip_no_trusted() -> None:
     ip = ip_address("10.10.10.10")
     assert ip == remote_ip([], [ip])
 
 
-def test_remote_ip_ok():
+def test_remote_ip_ok() -> None:
     ips = [
         ip_address("10.10.10.10"),
         ip_address("20.20.20.20"),
@@ -74,7 +74,7 @@ def test_remote_ip_ok():
     assert ips[-1] == remote_ip(trusted, ips)
 
 
-def test_remote_ip_not_trusted_network():
+def test_remote_ip_not_trusted_network() -> None:
     ips = [
         ip_address("10.10.10.10"),
         ip_address("20.20.20.20"),
@@ -87,7 +87,7 @@ def test_remote_ip_not_trusted_network():
     assert ctx.value.ip == ip_address("10.10.10.10")
 
 
-def test_remote_ip_not_trusted_ip():
+def test_remote_ip_not_trusted_ip() -> None:
     ips = [
         ip_address("10.10.10.10"),
         ip_address("20.20.20.20"),
@@ -100,7 +100,7 @@ def test_remote_ip_not_trusted_ip():
     assert ctx.value.ip == ip_address("10.10.10.10")
 
 
-def test_remote_ip_invalis_ips_count():
+def test_remote_ip_invalis_ips_count() -> None:
     ips = [ip_address("10.10.10.10"), ip_address("20.20.20.20")]
     trusted = parse_trusted_list([["40.40.40.40"], ["20.20.20.20"]])
     with pytest.raises(IncorrectIPCount) as ctx:
@@ -109,7 +109,7 @@ def test_remote_ip_invalis_ips_count():
     assert ctx.value.actual == [IPv4Address("10.10.10.10"), IPv4Address("20.20.20.20")]
 
 
-def test_remote_with_ellipsis():
+def test_remote_with_ellipsis() -> None:
     ips = [
         ip_address("10.10.10.10"),
         ip_address("20.20.20.20"),

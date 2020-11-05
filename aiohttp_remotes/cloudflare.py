@@ -1,29 +1,31 @@
 from ipaddress import ip_address, ip_network
+from typing import Awaitable, Callable, Optional, Set
 
 import aiohttp
 from aiohttp import web
 
 from .abc import ABC
+from .exceptions import IPNetwork
 from .log import logger
 
 
 class Cloudflare(ABC):
-    def __init__(self, client=None):
-        self._ip_networks = set()
+    def __init__(self, client: Optional[aiohttp.ClientSession] = None) -> None:
+        self._ip_networks: Set[IPNetwork] = set()
         self._client = client
 
-    def _parse_mask(self, text):
+    def _parse_mask(self, text: str) -> Set[IPNetwork]:
         ret = set()
         for mask in text.splitlines():
             try:
-                mask = ip_network(mask)
+                real_mask = ip_network(mask)
             except (ValueError, TypeError):
                 continue
 
-            ret.add(mask)
+            ret.add(real_mask)
         return ret
 
-    async def setup(self, app):
+    async def setup(self, app: web.Application) -> None:
         if self._client is not None:  # pragma: no branch
             client = self._client
         else:
@@ -42,7 +44,11 @@ class Cloudflare(ABC):
         app.middlewares.append(self.middleware)
 
     @web.middleware
-    async def middleware(self, request, handler):
+    async def middleware(
+        self,
+        request: web.Request,
+        handler: Callable[[web.Request], Awaitable[web.StreamResponse]],
+    ) -> web.StreamResponse:
         remote_ip = ip_address(request.remote)
 
         for network in self._ip_networks:
@@ -54,4 +60,4 @@ class Cloudflare(ABC):
         context = {"remote_ip": remote_ip}
         logger.error(msg, context)
 
-        await self.raise_error(request)
+        return await self.raise_error(request)

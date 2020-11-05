@@ -11,7 +11,7 @@ endif
 
 .PHONY: lint
 lint: fmt
-	mypy aiohttp_remotes
+	mypy --strict --show-error-codes aiohttp_remotes tests
 
 test:
 	pytest tests

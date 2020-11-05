@@ -1,4 +1,17 @@
+import asyncio
 import socket
+import ssl
+from typing import (
+    Any,
+    Awaitable,
+    Callable,
+    Dict,
+    Iterator,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+)
 
 import pytest
 
@@ -6,19 +19,24 @@ import aiohttp
 from aiohttp import web
 from aiohttp.abc import AbstractResolver
 from aiohttp.resolver import DefaultResolver
-from aiohttp.test_utils import unused_port
+from aiohttp.test_utils import TestClient, unused_port
 from aiohttp_remotes import Cloudflare, setup as _setup
+
+_Client = Callable[[web.Application], Awaitable[TestClient]]
+_CloudSession = Callable[..., Awaitable[aiohttp.ClientSession]]
 
 
 class FakeResolver(AbstractResolver):
     _LOCAL_HOST = {0: "127.0.0.1", socket.AF_INET: "127.0.0.1", socket.AF_INET6: "::1"}
 
-    def __init__(self, fakes):
+    def __init__(self, fakes: Mapping[str, int]) -> None:
         """fakes -- dns -> port dict"""
         self._fakes = fakes
-        self._resolver = DefaultResolver()
+        self._resolver: AbstractResolver = DefaultResolver()
 
-    async def resolve(self, host, port=0, family=socket.AF_INET):
+    async def resolve(
+        self, host: str, port: int = 0, family: int = socket.AF_INET
+    ) -> List[Dict[str, Any]]:
         fake_port = self._fakes.get(host)
         if fake_port is not None:
             return [
@@ -34,22 +52,28 @@ class FakeResolver(AbstractResolver):
         else:
             return await self._resolver.resolve(host, port, family)
 
-    async def close(self):
+    async def close(self) -> None:
         await self._resolver.close()
 
 
 class FakeCloudfare:
-    def __init__(self, *, ipv4=("127.0.0.0/16",), ipv6=("::/16",), ssl_ctx):
+    def __init__(
+        self,
+        *,
+        ipv4: Sequence[str] = ("127.0.0.0/16",),
+        ipv6: Sequence[str] = ("::/16",),
+        ssl_ctx: ssl.SSLContext
+    ) -> None:
         self._ipv4 = ipv4
         self._ipv6 = ipv6
         self.app = web.Application()
         self.app.router.add_get("/ips-v4", self.ipv4)
         self.app.router.add_get("/ips-v6", self.ipv6)
 
-        self.runner = None
+        self.runner: Optional[web.AppRunner] = None
         self.ssl_context = ssl_ctx
 
-    async def start(self):
+    async def start(self) -> Dict[str, int]:
         port = unused_port()
         self.runner = web.AppRunner(self.app)
         await self.runner.setup()
@@ -57,22 +81,28 @@ class FakeCloudfare:
         await site.start()
         return {"www.cloudflare.com": port}
 
-    async def stop(self):
+    async def stop(self) -> None:
+        assert self.runner is not None
         self.runner.cleanup()
 
-    async def ipv4(self, request):
+    async def ipv4(self, request: web.Request) -> web.Response:
         return web.Response(text="\n".join(self._ipv4))
 
-    async def ipv6(self, request):
+    async def ipv6(self, request: web.Request) -> web.Response:
         return web.Response(text="\n".join(self._ipv6))
 
 
 @pytest.fixture
-def cloudfare_session(loop, ssl_ctx, client_ssl_ctx):
+def cloudfare_session(
+    loop: asyncio.AbstractEventLoop,
+    ssl_ctx: ssl.SSLContext,
+    client_ssl_ctx: ssl.SSLContext,
+) -> Iterator[_CloudSession]:
     sessions = []
 
-    async def go(**kwargs):
-        fake = FakeCloudfare(**kwargs, ssl_ctx=ssl_ctx)
+    async def go(**kwargs: Any) -> aiohttp.ClientSession:
+        kwargs.setdefault("ssl_ctx", ssl_ctx)
+        fake = FakeCloudfare(**kwargs)
         info = await fake.start()
         resolver = FakeResolver(info)
         connector = aiohttp.TCPConnector(resolver=resolver, ssl=client_ssl_ctx)
@@ -87,8 +117,10 @@ def cloudfare_session(loop, ssl_ctx, client_ssl_ctx):
         loop.run_until_complete(s.close())
 
 
-async def test_cloudfare_ok(aiohttp_client, cloudfare_session):
-    async def handler(request):
+async def test_cloudfare_ok(
+    aiohttp_client: _Client, cloudfare_session: _CloudSession
+) -> None:
+    async def handler(request: web.Request) -> web.Response:
         assert request.remote == "10.10.10.10"
 
         return web.Response()
@@ -103,7 +135,9 @@ async def test_cloudfare_ok(aiohttp_client, cloudfare_session):
     assert resp.status == 200
 
 
-async def test_cloudfare_no_networks(aiohttp_client, cloudfare_session):
+async def test_cloudfare_no_networks(
+    aiohttp_client: _Client, cloudfare_session: _CloudSession
+) -> None:
     cf_client = await cloudfare_session(ipv4=[], ipv6=[])
 
     app = web.Application()
@@ -111,8 +145,10 @@ async def test_cloudfare_no_networks(aiohttp_client, cloudfare_session):
         await _setup(app, Cloudflare(cf_client))
 
 
-async def test_cloudfare_not_cloudfare(aiohttp_client, cloudfare_session):
-    async def handler(request):
+async def test_cloudfare_not_cloudfare(
+    aiohttp_client: _Client, cloudfare_session: _CloudSession
+) -> None:
+    async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
     cf_client = await cloudfare_session(ipv4=["10.0.0.0"], ipv6=["10::"])
@@ -125,8 +161,10 @@ async def test_cloudfare_not_cloudfare(aiohttp_client, cloudfare_session):
     assert resp.status == 400
 
 
-async def test_cloudfare_garbage_config(aiohttp_client, cloudfare_session):
-    async def handler(request):
+async def test_cloudfare_garbage_config(
+    aiohttp_client: _Client, cloudfare_session: _CloudSession
+) -> None:
+    async def handler(request: web.Request) -> web.Response:
         assert request.remote == "10.10.10.10"
 
         return web.Response()

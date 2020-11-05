@@ -1,4 +1,5 @@
 import ssl
+from typing import Any
 
 import pytest
 
@@ -11,14 +12,14 @@ except ImportError:
 
 
 @pytest.fixture
-def tls_certificate_authority():
+def tls_certificate_authority() -> Any:
     if not TRUSTME:
         pytest.xfail("trustme fails on 32bit Linux")
     return trustme.CA()
 
 
 @pytest.fixture
-def tls_certificate(tls_certificate_authority):
+def tls_certificate(tls_certificate_authority: Any) -> Any:
     return tls_certificate_authority.issue_server_cert(
         "localhost",
         "www.cloudflare.com",
@@ -28,14 +29,14 @@ def tls_certificate(tls_certificate_authority):
 
 
 @pytest.fixture
-def ssl_ctx(tls_certificate):
+def ssl_ctx(tls_certificate: Any) -> ssl.SSLContext:
     ssl_ctx = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
     tls_certificate.configure_cert(ssl_ctx)
     return ssl_ctx
 
 
 @pytest.fixture
-def client_ssl_ctx(tls_certificate_authority):
+def client_ssl_ctx(tls_certificate_authority: Any) -> ssl.SSLContext:
     ssl_ctx = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
     tls_certificate_authority.configure_trust(ssl_ctx)
     return ssl_ctx

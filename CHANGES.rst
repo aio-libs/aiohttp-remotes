@@ -7,6 +7,8 @@
 
 * Provide ``X-Forwarded`` middleware that filters out trusted values (#153)
 
+* Add type annotations
+
 0.1.2 (2018-03-01)
 ==================
 
