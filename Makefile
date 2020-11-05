@@ -11,9 +11,9 @@ endif
 
 .PHONY: lint
 lint: fmt
-	mypy $(MYPY_DIRS)
+	mypy aiohttp_remotes
 
-test: lint
+test:
 	pytest tests
 
 doc:

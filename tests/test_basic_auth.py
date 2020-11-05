@@ -1,5 +1,3 @@
-import base64
-
 import aiohttp
 from aiohttp import web
 from aiohttp_remotes import BasicAuth, setup as _setup
@@ -65,20 +63,6 @@ async def test_basic_auth_malformed_req2(aiohttp_client):
     await _setup(app, BasicAuth("user", "pass", "realm"))
     cl = await aiohttp_client(app)
     resp = await cl.get("/", headers={"Authorization": "Basic nonbase64"})
-    assert resp.status == 401
-    assert resp.headers["WWW-Authenticate"] == "Basic realm=realm"
-
-
-async def test_basic_auth_malformed_req3(aiohttp_client):
-    async def handler(request):
-        return web.Response()
-
-    app = web.Application()
-    app.router.add_get("/", handler)
-    await _setup(app, BasicAuth("user", "pass", "realm"))
-    cl = await aiohttp_client(app)
-    creds = base64.encodebytes(b"a:b:c").decode("utf-8")
-    resp = await cl.get("/", headers={"Authorization": "Basic " + creds})
     assert resp.status == 401
     assert resp.headers["WWW-Authenticate"] == "Basic realm=realm"
 

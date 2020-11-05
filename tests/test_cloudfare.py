@@ -1,6 +1,4 @@
-import pathlib
 import socket
-import ssl
 
 import pytest
 
@@ -41,7 +39,7 @@ class FakeResolver(AbstractResolver):
 
 
 class FakeCloudfare:
-    def __init__(self, *, ipv4=["127.0.0.0/16"], ipv6=["::/16"]):
+    def __init__(self, *, ipv4=("127.0.0.0/16",), ipv6=("::/16",), ssl_ctx):
         self._ipv4 = ipv4
         self._ipv6 = ipv6
         self.app = web.Application()
@@ -49,11 +47,7 @@ class FakeCloudfare:
         self.app.router.add_get("/ips-v6", self.ipv6)
 
         self.runner = None
-        here = pathlib.Path(__file__)
-        ssl_cert = here.parent / "sample.crt"
-        ssl_key = here.parent / "sample.key"
-        self.ssl_context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
-        self.ssl_context.load_cert_chain(str(ssl_cert), str(ssl_key))
+        self.ssl_context = ssl_ctx
 
     async def start(self):
         port = unused_port()
@@ -74,14 +68,14 @@ class FakeCloudfare:
 
 
 @pytest.fixture
-def cloudfare_session(loop):
+def cloudfare_session(loop, ssl_ctx, client_ssl_ctx):
     sessions = []
 
     async def go(**kwargs):
-        fake = FakeCloudfare(**kwargs)
+        fake = FakeCloudfare(**kwargs, ssl_ctx=ssl_ctx)
         info = await fake.start()
         resolver = FakeResolver(info)
-        connector = aiohttp.TCPConnector(resolver=resolver, ssl=False)
+        connector = aiohttp.TCPConnector(resolver=resolver, ssl=client_ssl_ctx)
 
         session = aiohttp.ClientSession(connector=connector)
         sessions.append(session)
