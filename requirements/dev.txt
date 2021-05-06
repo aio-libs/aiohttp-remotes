@@ -1,5 +1,5 @@
 -r ci.txt
 -r lint.txt
 ipdb==0.13.4
-ipython==7.19.0
+ipython==7.23.1
 pytest-sugar==0.9.4
