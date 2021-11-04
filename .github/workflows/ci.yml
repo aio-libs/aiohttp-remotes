@@ -92,14 +92,12 @@ jobs:
         fail_ci_if_error: false
 
   check:  # This job does nothing and is only used for the branch protection
-    needs:
-    - [lint, test]
-
+    name: CI Checks
+    needs: [lint, test]
     runs-on: ubuntu-latest
-
     steps:
       - name: Report success of the test matrix
-        run: >-
+        run: |
           print("All's good")
         shell: python
 
