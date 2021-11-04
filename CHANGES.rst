@@ -1,3 +1,5 @@
+.. towncrier release notes start
+
 1.1.0 (2021-11-04)
 ==================
 
