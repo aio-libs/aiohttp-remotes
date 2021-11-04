@@ -93,7 +93,7 @@ jobs:
 
   check:  # This job does nothing and is only used for the branch protection
     name: CI Checks
-    needs: [lint, test]
+    needs: [lint, unit]
     runs-on: ubuntu-latest
     steps:
       - name: Report success of the test matrix
