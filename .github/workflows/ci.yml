@@ -91,9 +91,21 @@ jobs:
         flags: unit
         fail_ci_if_error: false
 
+  check:  # This job does nothing and is only used for the branch protection
+    needs:
+    - [lint, test]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Report success of the test matrix
+        run: >-
+          print("All's good")
+        shell: python
+
   deploy:
     name: Deploy on PyPI
-    needs: [lint, unit]
+    needs: check
     runs-on: ubuntu-latest
     # Run only on pushing a tag
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
