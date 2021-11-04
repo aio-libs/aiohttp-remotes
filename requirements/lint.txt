@@ -1,5 +1,5 @@
 -r ci.txt
-black==21.9b0; implementation_name=="cpython"
+black==21.10b0; implementation_name=="cpython"
 flake8==4.0.1
 flake8-pyi==20.10.0
 isort==5.10.0
