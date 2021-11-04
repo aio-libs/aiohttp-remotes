@@ -117,13 +117,18 @@ jobs:
     - name: Install dependencies
       uses: py-actions/py-dependency-install@v2
       with:
-        path: requirements/ci.txt
-    - name: Install itself
+        path: requirements/prod.txt
+    - name: Build dists
       run: |
-        pip install .
-    - name: PyPI upload
-      env:
-        FLIT_USERNAME: __token__
-        FLIT_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-      run: |
-        flit publish
+        flit build
+    - name: Make Release
+      uses: aio-libs/create-release@v1.2.3
+      with:
+        changes_file: CHANGES.rst
+        name: aiohttp-remotes
+        version_file: aiohttp_remotes/__init__.py
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        pypi_token: ${{ secrets.PYPI_TOKEN }}
+        dist_dir: dist
+        fix_issue_regex: "`#(\\d+) <https://github.com/aio-libs/aiohttp-remotes/issues/\\1>`"
+        fix_issue_repl: "(#\\1)"
