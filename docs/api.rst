@@ -146,6 +146,9 @@ X-Forwarded
 
    The class does not perform any security check, use it with caution.
 
+   .. versionchanged:: 1.2 Raises a :class:`~web.HTTPBadRequest``
+      when ``X-Forwarded-For`` is an invalid IP. Previously raised a
+      ``ValueError``.
 
 .. class:: XForwardedFiltered(trusted)
 

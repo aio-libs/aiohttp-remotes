@@ -264,6 +264,31 @@ async def test_x_forwarded_filtered_too_many_headers(aiohttp_client: _Client) ->
     assert resp.status == 400
 
 
+async def test_x_forwarded_invalid_remote_ip(aiohttp_client: _Client) -> None:
+    async def handler(request: web.Request) -> web.Response:
+        assert request.host == "example.com"
+        assert request.scheme == "https"
+        assert request.secure
+        assert request.remote
+
+        return web.Response()
+
+    app = web.Application()
+    app.router.add_get("/", handler)
+    await _setup(app, XForwardedFiltered({"10.0.0.0/8"}))
+    cl = await aiohttp_client(app)
+    resp = await cl.get(
+        "/",
+        headers=[
+            ("X-Forwarded-For", "example.com"),
+            ("X-Forwarded-Proto", "https"),
+            ("X-Forwarded-Host", "example.com"),
+        ],
+    )
+    assert resp.status == 400
+    assert resp.reason == "Invalid X-Forwarded-For header"
+
+
 async def test_x_forwarded_strict_ok(aiohttp_client: _Client) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.host == "example.com"
