@@ -51,7 +51,9 @@ class XForwardedBase(ABC):
             try:
                 valid_ips.append(ip_address(addr))
             except ValueError:
-                raise web.HTTPBadRequest(reason=f"Invalid {hdrs.X_FORWARDED_FOR} header")
+                raise web.HTTPBadRequest(
+                    reason=f"Invalid {hdrs.X_FORWARDED_FOR} header"
+                )
         return valid_ips
 
     def get_forwarded_proto(self, headers: MultiMapping[str]) -> List[str]:
