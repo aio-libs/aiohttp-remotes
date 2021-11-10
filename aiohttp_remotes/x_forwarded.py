@@ -45,7 +45,16 @@ class XForwardedBase(ABC):
         if len(forwarded_for) > 1:
             raise TooManyHeaders(hdrs.X_FORWARDED_FOR)
         forwarded_for = forwarded_for[0].split(",")
-        return [ip_address(addr) for addr in (a.strip() for a in forwarded_for) if addr]
+        valid_ips = []
+        for a in forwarded_for:
+            addr = a.strip()
+            try:
+                valid_ips.append(ip_address(addr))
+            except ValueError:
+                raise web.HTTPBadRequest(
+                    reason=f"Invalid {hdrs.X_FORWARDED_FOR} header"
+                )
+        return valid_ips
 
     def get_forwarded_proto(self, headers: MultiMapping[str]) -> List[str]:
         forwarded_proto: List[str] = headers.getall(hdrs.X_FORWARDED_PROTO, [])
