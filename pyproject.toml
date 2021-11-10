@@ -26,3 +26,11 @@ classifiers=["License :: OSI Approved :: MIT License",
 
 [tool.flit.metadata.urls]
 Documentation = "https://aiohttp-remotes.readthedocs.io"
+
+
+[tool.towncrier]
+package = "aiohttp-remotes"
+filename = "CHANGES.rst"
+directory = "CHANGES/"
+title_format = "{version} ({project_date})"
+issue_format = "`#{issue} <https://github.com/aio-libs/aiohttp-remotes/issues/{issue}>`_"
