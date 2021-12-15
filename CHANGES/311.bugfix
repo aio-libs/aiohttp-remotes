@@ -1,1 +1,0 @@
-Raise a ``HTTPBadRequest`` instead of ``ValueError`` when ``X-Forwarded-For`` header is not a valid IP.
