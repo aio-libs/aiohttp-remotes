@@ -1,7 +1,7 @@
 -r prod.txt
 cryptography==36.0.1; platform_machine!="i686" # no 32-bit wheels; no python 3.9 wheels yet
 pytest==6.2.5
-pytest-aiohttp==0.3.0
+pytest-aiohttp==1.0.3
 pytest-cov==3.0.0
 trustme==0.9.0; platform_machine!="i686"    # no 32-bit wheels
 twine==3.7.1
