@@ -4,4 +4,4 @@ pytest==6.2.5
 pytest-aiohttp==0.3.0
 pytest-cov==3.0.0
 trustme==0.9.0; platform_machine!="i686"    # no 32-bit wheels
-twine==3.8.0
+twine==4.0.0
