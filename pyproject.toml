@@ -20,6 +20,7 @@ classifiers=["License :: OSI Approved :: MIT License",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Development Status :: 5 - Production/Stable",
     "Framework :: AsyncIO",
+    "Framework :: aiohttp",
 ]
 
 
