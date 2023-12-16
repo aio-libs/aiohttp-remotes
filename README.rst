@@ -2,7 +2,9 @@
 aiohttp-remotes
 ===============
 
-The library is a set of useful tools for ``aiohttp.web`` server.
+The library is a set of useful tools for ``aiohttp.web`` server. It is a 
+hopefully temporary fork of the aiohttp-remotes project containing a fix for
+parsing the X-Forwarded-Host header.
 
 The full list of tools is:
 
