@@ -6,7 +6,7 @@ aiohttp.web.Request if the server is deployed behind reverse proxy.
 """
 
 
-__version__ = "1.2.1.dev"
+__version__ = "1.2.1"
 
 
 from typing_extensions import Protocol
