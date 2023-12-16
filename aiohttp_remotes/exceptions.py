@@ -81,6 +81,23 @@ class IncorrectProtoCount(RemoteError):
         logger.error(msg, context, extra=extra)
 
 
+class IncorrectHostCount(RemoteError):
+    @property
+    def expected(self) -> int:
+        return cast(int, self.args[0])
+    
+    @property
+    def actual(self) -> Sequence[str]:
+        return cast(Sequence[str], self.args[1])
+    
+    def log(self, request: web.Request) -> None:
+        msg = "Too many X-Forwarded-Host values: %(actual)s, " "expected %(expected)s"
+        context: Dict[str, Any] = {"actual": self.actual, "expected": self.expected}
+        extra = context.copy()
+        extra["request"] = request
+        logger.error(msg, context, extra=extra)
+
+
 class UntrustedIP(RemoteError):
     @property
     def ip(self) -> IPAddress:
