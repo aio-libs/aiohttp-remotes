@@ -3,5 +3,5 @@ mypy==0.931; implementation_name=="cpython"
 pre-commit==2.17.0
 sphinx==4.4.0
 sphinxcontrib-asyncio==0.3.0
-sphinxcontrib-spelling==7.3.2
+sphinxcontrib-spelling==8.0.0
 towncrier==21.9.0
