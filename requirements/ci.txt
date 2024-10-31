@@ -3,5 +3,5 @@ cryptography==36.0.1; platform_machine!="i686" # no 32-bit wheels; no python 3.9
 pytest==7.2.2
 pytest-aiohttp==0.3.0
 pytest-cov==3.0.0
-trustme==0.9.0; platform_machine!="i686"    # no 32-bit wheels
+trustme==1.2.0; platform_machine!="i686"    # no 32-bit wheels
 twine==4.0.2
