@@ -4,4 +4,4 @@ pre-commit==4.0.1
 sphinx==8.1.3
 sphinxcontrib-asyncio==0.3.0
 sphinxcontrib-spelling==7.3.2
-towncrier==21.9.0
+towncrier==24.8.0
