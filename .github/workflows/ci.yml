@@ -31,7 +31,7 @@ jobs:
         restore-keys: |
             pip-lint-
     - name: Install dependencies
-      uses: py-actions/py-dependency-install@v2
+      uses: py-actions/py-dependency-install@v4
       with:
         path: requirements/lint.txt
     - name: Run linters
@@ -71,7 +71,7 @@ jobs:
         restore-keys: |
             pip-ci-${{ runner.os }}-${{ matrix.python-version }}-
     - name: Install dependencies
-      uses: py-actions/py-dependency-install@v2
+      uses: py-actions/py-dependency-install@v4
       with:
         path: requirements/ci.txt
     - name: Install itself
@@ -111,7 +111,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v2
     - name: Install dependencies
-      uses: py-actions/py-dependency-install@v2
+      uses: py-actions/py-dependency-install@v4
       with:
         path: requirements/prod.txt
     - name: Build dists
