@@ -40,7 +40,7 @@ class IncorrectIPCount(RemoteError):
         return cast(Sequence[IPAddress], self.args[1])
 
     def log(self, request: web.Request) -> None:
-        msg = "Too many X-Forwarded-For values: %(actual)s, " "expected %(expected)s"
+        msg = "Too many X-Forwarded-For values: %(actual)s, expected %(expected)s"
         context: Dict[str, Any] = {"actual": self.actual, "expected": self.expected}
         extra = context.copy()
         extra["request"] = request

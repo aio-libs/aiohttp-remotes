@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [tool.flit.metadata]
 module="aiohttp_remotes"
-dist-name="hea-aiohttp-remotes"
+dist-name="aiohttp-remotes"
 author="Andrew Svetlov"
 author-email="andrew.svetlov@gmail.com"
 home-page="https://github.com/aio-libs/aiohttp-remotes"
