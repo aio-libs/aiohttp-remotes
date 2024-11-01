@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from collections.abc import Container
 from ipaddress import ip_address
-from typing import Awaitable, Callable, Iterable, List, Optional
+from typing import Awaitable, Callable, Iterable, List
 
 from multidict import MultiMapping
 
@@ -9,6 +9,7 @@ from aiohttp import hdrs, web
 
 from .abc import ABC
 from .exceptions import (
+    IncorrectHostCount,
     IncorrectProtoCount,
     IPAddress,
     RemoteError,
@@ -65,11 +66,14 @@ class XForwardedBase(ABC):
         forwarded_proto = forwarded_proto[0].split(",")
         return [p.strip() for p in forwarded_proto]
 
-    def get_forwarded_host(self, headers: MultiMapping[str]) -> Optional[str]:
+    def get_forwarded_host(self, headers: MultiMapping[str]) -> List[str]:
         forwarded_host: List[str] = headers.getall(hdrs.X_FORWARDED_HOST, [])
+        if not forwarded_host:
+            return []
         if len(forwarded_host) > 1:
             raise TooManyHeaders(hdrs.X_FORWARDED_HOST)
-        return forwarded_host[0] if forwarded_host else None
+        forwarded_host = forwarded_host[0].split(",")
+        return [p.strip() for p in forwarded_host]
 
 
 class XForwardedRelaxed(XForwardedBase):
@@ -95,8 +99,8 @@ class XForwardedRelaxed(XForwardedBase):
                 overrides["scheme"] = proto[-self._num]
 
             host = self.get_forwarded_host(headers)
-            if host is not None:
-                overrides["host"] = host
+            if host:
+                overrides["host"] = str(host[-self._num])
 
             request = request.clone(**overrides)  # type: ignore[arg-type]
 
@@ -152,9 +156,11 @@ class XForwardedFiltered(XForwardedBase):
                     index = -1
                 overrides["scheme"] = proto[index]
 
-            host = self.get_forwarded_host(headers)
-            if host is not None:
-                overrides["host"] = host
+            host = list(reversed(self.get_forwarded_host(headers)))
+            if host:
+                if index >= len(host):
+                    index = -1
+                overrides["host"] = host[index]
 
             request = request.clone(**overrides)  # type: ignore[arg-type]
             return await handler(request)
@@ -194,9 +200,11 @@ class XForwardedStrict(XForwardedBase):
                     raise IncorrectProtoCount(len(self._trusted), proto)
                 overrides["scheme"] = proto[0]
 
-            host = self.get_forwarded_host(headers)
-            if host is not None:
-                overrides["host"] = host
+            host = list(reversed(self.get_forwarded_host(headers)))
+            if host:
+                if len(host) > len(self._trusted):
+                    raise IncorrectHostCount(len(self._trusted), host)
+                overrides["host"] = host[0]
 
             request = request.clone(**overrides)  # type: ignore[arg-type]
 

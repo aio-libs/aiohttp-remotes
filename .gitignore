@@ -7,3 +7,5 @@ htmlcov
 docs/_build
 .pytest_cache
 .python-version
+
+.venv
