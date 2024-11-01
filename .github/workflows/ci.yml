@@ -89,6 +89,7 @@ jobs:
         file: ./coverage.xml
         flags: unit
         fail_ci_if_error: false
+        token: ${{ secrets.CODECOV_TOKEN }}
 
   check:  # This job does nothing and is only used for the branch protection
     if: always()
