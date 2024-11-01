@@ -26,6 +26,12 @@ _Client = Callable[[web.Application], Awaitable[TestClient]]
 _CloudSession = Callable[..., Awaitable[aiohttp.ClientSession]]
 
 
+try:
+    from aiohttp.abc import ResolveResult
+except ImportError:
+    ResolveResult = Dict[str, Any]  # type: ignore[assignment, misc]
+
+
 class FakeResolver(AbstractResolver):
     _LOCAL_HOST = {0: "127.0.0.1", socket.AF_INET: "127.0.0.1", socket.AF_INET6: "::1"}
 
@@ -35,8 +41,8 @@ class FakeResolver(AbstractResolver):
         self._resolver: AbstractResolver = DefaultResolver()
 
     async def resolve(
-        self, host: str, port: int = 0, family: int = socket.AF_INET
-    ) -> List[Dict[str, Any]]:
+        self, host: str, port: int = 0, family: socket.AddressFamily = socket.AF_INET
+    ) -> List[ResolveResult]:
         fake_port = self._fakes.get(host)
         if fake_port is not None:
             return [
@@ -83,7 +89,7 @@ class FakeCloudfare:
 
     async def stop(self) -> None:
         assert self.runner is not None
-        self.runner.cleanup()
+        await self.runner.cleanup()
 
     async def ipv4(self, request: web.Request) -> web.Response:
         return web.Response(text="\n".join(self._ipv4))

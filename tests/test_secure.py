@@ -178,7 +178,7 @@ async def test_default_redirect() -> None:
     s = Secure()
 
     async def handler(request: web.Request) -> web.Response:
-        pass
+        return web.Response()  # never executed
 
     req = make_mocked_request("GET", "/path", headers={"Host": "example.com"})
     with pytest.raises(web.HTTPPermanentRedirect) as ctx:

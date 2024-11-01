@@ -83,7 +83,7 @@ def test_remote_ip_not_trusted_network() -> None:
     trusted = parse_trusted_list([["40.40.0.0/16"], ["20.20.20.20"]])
     with pytest.raises(UntrustedIP) as ctx:
         remote_ip(trusted, ips)
-    assert ctx.value.trusted == [ip_network("40.40.0.0/16")]
+    assert list(ctx.value.trusted) == [ip_network("40.40.0.0/16")]
     assert ctx.value.ip == ip_address("10.10.10.10")
 
 
