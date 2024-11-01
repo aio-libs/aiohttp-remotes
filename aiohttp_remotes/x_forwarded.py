@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from collections.abc import Container
 from ipaddress import ip_address
-from typing import Awaitable, Callable, Iterable, List, Optional
+from typing import Awaitable, Callable, Iterable, List
 
 from multidict import MultiMapping
 
