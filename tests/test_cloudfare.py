@@ -2,10 +2,10 @@ import socket
 import ssl
 from typing import (
     Any,
+    AsyncIterator,
     Awaitable,
     Callable,
     Dict,
-    Iterator,
     List,
     Mapping,
     Optional,
@@ -101,7 +101,7 @@ class FakeCloudfare:
 async def cloudfare_session(
     ssl_ctx: ssl.SSLContext,
     client_ssl_ctx: ssl.SSLContext,
-) -> Iterator[_CloudSession]:
+) -> AsyncIterator[_CloudSession]:
     sessions = []
 
     async def go(**kwargs: Any) -> aiohttp.ClientSession:
