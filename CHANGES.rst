@@ -1,20 +1,26 @@
-
-
 .. towncrier release notes start
 
-1.2.0 (2021-12-15)
+1.3.0 (2024-11-01)
 ==================
+
+* Added explicit tests for running with Python 3.11, 3.12, 3.13
 
 Bugfixes
 --------
 
-- Raise a ``HTTPBadRequest`` instead of ``ValueError`` when ``X-Forwarded-For`` header is not a valid IP. (`#311 <https://github.com/aio-libs/aiohttp-remotes/issues/311>`_)
-
+- Fix for ``X-Forwarded-Host`` parsing when it contains multiple hosts. (`#436 <https://github.com/aio-libs/aiohttp-remotes/issues/436>`_)
 
 Deprecations and Removals
 -------------------------
 
-- Dropped Python 3.6 support, the minimal supported aiohttp is 3.8.1 (`#331 <https://github.com/aio-libs/aiohttp-remotes/issues/331>`_)
+- Dropped Python 3.7 and 3.8 support, the minimal supported aiohttp is 3.9
+
+1.2.0 (2021-12-15)
+==================
+
+* Raise a ``HTTPBadRequest`` instead of ``ValueError`` when ``X-Forwarded-For`` header is not a valid IP. (`#311 <https://github.com/aio-libs/aiohttp-remotes/issues/311>`_)
+
+* Dropped Python 3.6 support, the minimal supported aiohttp is 3.8.1 (`#331 <https://github.com/aio-libs/aiohttp-remotes/issues/331>`_)
 
 
 1.1.0 (2021-11-04)
