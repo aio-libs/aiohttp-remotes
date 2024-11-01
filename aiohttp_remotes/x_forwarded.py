@@ -9,12 +9,12 @@ from aiohttp import hdrs, web
 
 from .abc import ABC
 from .exceptions import (
+    IncorrectHostCount,
     IncorrectProtoCount,
     IPAddress,
     RemoteError,
     TooManyHeaders,
     UntrustedIP,
-    IncorrectHostCount,
 )
 from .utils import (
     Elem,
