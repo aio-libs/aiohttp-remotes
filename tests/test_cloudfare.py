@@ -3,10 +3,10 @@ import socket
 import ssl
 from typing import (
     Any,
+    AsyncIterator,
     Awaitable,
     Callable,
     Dict,
-    Iterator,
     List,
     Mapping,
     Optional,
@@ -26,6 +26,12 @@ _Client = Callable[[web.Application], Awaitable[TestClient]]
 _CloudSession = Callable[..., Awaitable[aiohttp.ClientSession]]
 
 
+try:
+    from aiohttp.abc import ResolveResult
+except ImportError:
+    ResolveResult = Dict[str, Any]  # type: ignore[assignment, misc]
+
+
 class FakeResolver(AbstractResolver):
     _LOCAL_HOST = {0: "127.0.0.1", socket.AF_INET: "127.0.0.1", socket.AF_INET6: "::1"}
 
@@ -35,8 +41,8 @@ class FakeResolver(AbstractResolver):
         self._resolver: AbstractResolver = DefaultResolver()
 
     async def resolve(
-        self, host: str, port: int = 0, family: int = socket.AF_INET
-    ) -> List[Dict[str, Any]]:
+        self, host: str, port: int = 0, family: socket.AddressFamily = socket.AF_INET
+    ) -> List[ResolveResult]:
         fake_port = self._fakes.get(host)
         if fake_port is not None:
             return [
@@ -83,7 +89,7 @@ class FakeCloudfare:
 
     async def stop(self) -> None:
         assert self.runner is not None
-        self.runner.cleanup()
+        await self.runner.cleanup()
 
     async def ipv4(self, request: web.Request) -> web.Response:
         return web.Response(text="\n".join(self._ipv4))
@@ -93,11 +99,10 @@ class FakeCloudfare:
 
 
 @pytest.fixture
-def cloudfare_session(
-    loop: asyncio.AbstractEventLoop,
+async def cloudfare_session(
     ssl_ctx: ssl.SSLContext,
     client_ssl_ctx: ssl.SSLContext,
-) -> Iterator[_CloudSession]:
+) -> AsyncIterator[_CloudSession]:
     sessions = []
 
     async def go(**kwargs: Any) -> aiohttp.ClientSession:
@@ -114,7 +119,9 @@ def cloudfare_session(
     yield go
 
     for s in sessions:
-        loop.run_until_complete(s.close())
+        await s.close()
+
+    await asyncio.sleep(0.01)
 
 
 async def test_cloudfare_ok(
@@ -131,8 +138,8 @@ async def test_cloudfare_ok(
     app.router.add_get("/", handler)
     await _setup(app, Cloudflare(cf_client))
     cl = await aiohttp_client(app)
-    resp = await cl.get("/", headers={"CF-CONNECTING-IP": "10.10.10.10"})
-    assert resp.status == 200
+    async with cl.get("/", headers={"CF-CONNECTING-IP": "10.10.10.10"}) as resp:
+        assert resp.status == 200
 
 
 async def test_cloudfare_no_networks(
@@ -157,8 +164,8 @@ async def test_cloudfare_not_cloudfare(
     app.router.add_get("/", handler)
     await _setup(app, Cloudflare(cf_client))
     cl = await aiohttp_client(app)
-    resp = await cl.get("/", headers={"CF-CONNECTING-IP": "10.10.10.10"})
-    assert resp.status == 400
+    async with cl.get("/", headers={"CF-CONNECTING-IP": "10.10.10.10"}) as resp:
+        assert resp.status == 400
 
 
 async def test_cloudfare_garbage_config(
@@ -175,5 +182,5 @@ async def test_cloudfare_garbage_config(
     app.router.add_get("/", handler)
     await _setup(app, Cloudflare(cf_client))
     cl = await aiohttp_client(app)
-    resp = await cl.get("/", headers={"CF-CONNECTING-IP": "10.10.10.10"})
-    assert resp.status == 200
+    async with cl.get("/", headers={"CF-CONNECTING-IP": "10.10.10.10"}) as resp:
+        assert resp.status == 200

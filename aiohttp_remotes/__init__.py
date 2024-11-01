@@ -5,8 +5,7 @@ aiohttp.web.Request if the server is deployed behind reverse proxy.
 
 """
 
-
-__version__ = "1.2.2.dev"
+__version__ = "1.2.0"
 
 
 from typing_extensions import Protocol
@@ -22,8 +21,7 @@ from .x_forwarded import XForwardedFiltered, XForwardedRelaxed, XForwardedStrict
 
 
 class _Tool(Protocol):
-    async def setup(self, app: web.Application) -> None:
-        ...
+    async def setup(self, app: web.Application) -> None: ...
 
 
 async def setup(app: web.Application, *tools: _Tool) -> None:

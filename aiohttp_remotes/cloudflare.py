@@ -49,7 +49,9 @@ class Cloudflare(ABC):
         request: web.Request,
         handler: Callable[[web.Request], Awaitable[web.StreamResponse]],
     ) -> web.StreamResponse:
-        remote_ip = ip_address(request.remote)
+        remote = request.remote
+        assert remote is not None, "HTTP transport is closed"
+        remote_ip = ip_address(remote)
 
         for network in self._ip_networks:
             if remote_ip in network:

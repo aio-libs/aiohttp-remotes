@@ -20,18 +20,18 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
     - name: Cache PyPI
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         key: pip-lint-${{ hashFiles('requirements/*.txt') }}
         path: ~/.cache/pip
         restore-keys: |
             pip-lint-
     - name: Install dependencies
-      uses: py-actions/py-dependency-install@v2
+      uses: py-actions/py-dependency-install@v4
       with:
         path: requirements/lint.txt
     - name: Run linters
@@ -43,35 +43,31 @@ jobs:
     needs: [lint]
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9.6', '3.10']
-        os: [ubuntu, macos, windows]
-        exclude:
-          - python-version: 3.8
-            os: macos
-          - python-version: 3.9
-            os: macos
+        python-version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        os: [ubuntu]
     runs-on: ${{ matrix.os }}-latest
     timeout-minutes: 10
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Setup Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Get pip cache dir
       id: pip-cache
       run: |
-        echo "::set-output name=dir::$(pip cache dir)"    # - name: Cache
+        echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT    # - name: Cache
+      shell: bash
     - name: Cache PyPI
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         key: pip-ci-${{ runner.os }}-${{ matrix.python-version }}-${{ hashFiles('requirements/*.txt') }}
         path: ${{ steps.pip-cache.outputs.dir }}
         restore-keys: |
             pip-ci-${{ runner.os }}-${{ matrix.python-version }}-
     - name: Install dependencies
-      uses: py-actions/py-dependency-install@v2
+      uses: py-actions/py-dependency-install@v4
       with:
         path: requirements/ci.txt
     - name: Install itself
@@ -83,21 +79,22 @@ jobs:
       run: |
         make test
     - name: Upload coverage
-      uses: codecov/codecov-action@v1
+      uses: codecov/codecov-action@v4
       with:
         file: ./coverage.xml
         flags: unit
         fail_ci_if_error: false
 
   check:  # This job does nothing and is only used for the branch protection
+    if: always()
     name: CI Checks
     needs: [lint, unit]
     runs-on: ubuntu-latest
     steps:
-      - name: Report success of the test matrix
-        run: |
-          print("All's good")
-        shell: python
+    - name: Decide whether the needed jobs succeeded or failed
+      uses: re-actors/alls-green@release/v1
+      with:
+        jobs: ${{ toJSON(needs) }}
 
   deploy:
     name: Deploy on PyPI
@@ -107,18 +104,18 @@ jobs:
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
     - name: Setup Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
     - name: Install dependencies
-      uses: py-actions/py-dependency-install@v2
+      uses: py-actions/py-dependency-install@v4
       with:
         path: requirements/prod.txt
     - name: Build dists
       run: |
         flit build
     - name: Make Release
-      uses: aio-libs/create-release@v1.2.3
+      uses: aio-libs/create-release@v1.6.6
       with:
         changes_file: CHANGES.rst
         name: aiohttp-remotes

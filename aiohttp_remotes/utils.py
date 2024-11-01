@@ -7,7 +7,7 @@ from ipaddress import (
     ip_address,
     ip_network,
 )
-from typing import Iterable, List, Sequence, Union, cast
+from typing import Iterable, List, Sequence, Union
 
 from .exceptions import (
     IncorrectIPCount,
@@ -72,7 +72,7 @@ def remote_ip(trusted: Trusted, ips: Sequence[IPAddress]) -> IPAddress:
         if tr is ...:
             return ip
         # cast drops previously handled ... type
-        check_ip(cast(Sequence[IPRule], tr), ip)
+        check_ip(tr, ip)
     return ips[-1]
 
 
