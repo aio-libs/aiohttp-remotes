@@ -1,4 +1,3 @@
-import asyncio
 import socket
 import ssl
 from typing import (
@@ -99,8 +98,7 @@ class FakeCloudfare:
 
 
 @pytest.fixture
-def cloudfare_session(
-    loop: asyncio.AbstractEventLoop,
+async def cloudfare_session(
     ssl_ctx: ssl.SSLContext,
     client_ssl_ctx: ssl.SSLContext,
 ) -> Iterator[_CloudSession]:
@@ -120,7 +118,7 @@ def cloudfare_session(
     yield go
 
     for s in sessions:
-        loop.run_until_complete(s.close())
+        await s.close()
 
 
 async def test_cloudfare_ok(
