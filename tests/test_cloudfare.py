@@ -18,11 +18,11 @@ import pytest
 import aiohttp
 from aiohttp import web
 from aiohttp.abc import AbstractResolver
+from aiohttp.pytest_plugin import AiohttpClient
 from aiohttp.resolver import DefaultResolver
-from aiohttp.test_utils import TestClient, unused_port
+from aiohttp.test_utils import unused_port
 from aiohttp_remotes import Cloudflare, setup as _setup
 
-_Client = Callable[[web.Application], Awaitable[TestClient]]
 _CloudSession = Callable[..., Awaitable[aiohttp.ClientSession]]
 
 
@@ -125,7 +125,7 @@ async def cloudfare_session(
 
 
 async def test_cloudfare_ok(
-    aiohttp_client: _Client, cloudfare_session: _CloudSession
+    aiohttp_client: AiohttpClient, cloudfare_session: _CloudSession
 ) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.remote == "10.10.10.10"
@@ -143,7 +143,7 @@ async def test_cloudfare_ok(
 
 
 async def test_cloudfare_no_networks(
-    aiohttp_client: _Client, cloudfare_session: _CloudSession
+    aiohttp_client: AiohttpClient, cloudfare_session: _CloudSession
 ) -> None:
     cf_client = await cloudfare_session(ipv4=[], ipv6=[])
 
@@ -153,7 +153,7 @@ async def test_cloudfare_no_networks(
 
 
 async def test_cloudfare_not_cloudfare(
-    aiohttp_client: _Client, cloudfare_session: _CloudSession
+    aiohttp_client: AiohttpClient, cloudfare_session: _CloudSession
 ) -> None:
     async def handler(request: web.Request) -> web.Response:
         return web.Response()
@@ -169,7 +169,7 @@ async def test_cloudfare_not_cloudfare(
 
 
 async def test_cloudfare_garbage_config(
-    aiohttp_client: _Client, cloudfare_session: _CloudSession
+    aiohttp_client: AiohttpClient, cloudfare_session: _CloudSession
 ) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.remote == "10.10.10.10"

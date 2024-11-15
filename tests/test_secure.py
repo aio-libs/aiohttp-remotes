@@ -1,21 +1,18 @@
 import ssl
-from typing import Awaitable, Callable
 
 import pytest
 from yarl import URL
 
 import aiohttp
 from aiohttp import web
-from aiohttp.test_utils import TestClient, TestServer, make_mocked_request
+from aiohttp.pytest_plugin import AiohttpClient, AiohttpServer
+from aiohttp.test_utils import make_mocked_request
 from aiohttp_remotes import Secure, setup as _setup
-
-_Server = Callable[..., Awaitable[TestServer]]
-_Client = Callable[..., Awaitable[TestClient]]
 
 
 async def test_secure_ok(
-    aiohttp_client: _Client,
-    aiohttp_server: _Server,
+    aiohttp_client: AiohttpClient,
+    aiohttp_server: AiohttpServer,
     ssl_ctx: ssl.SSLContext,
     client_ssl_ctx: ssl.SSLContext,
 ) -> None:
@@ -39,8 +36,8 @@ async def test_secure_ok(
 
 
 async def test_secure_redirect(
-    aiohttp_client: _Client,
-    aiohttp_server: _Server,
+    aiohttp_client: AiohttpClient,
+    aiohttp_server: AiohttpServer,
     ssl_ctx: ssl.SSLContext,
     client_ssl_ctx: ssl.SSLContext,
 ) -> None:
@@ -62,7 +59,7 @@ async def test_secure_redirect(
         assert resp.request_info.url.scheme == "https"
 
 
-async def test_secure_no_redirection(aiohttp_client: _Client) -> None:
+async def test_secure_no_redirection(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
@@ -76,8 +73,8 @@ async def test_secure_no_redirection(aiohttp_client: _Client) -> None:
 
 
 async def test_no_x_frame(
-    aiohttp_client: _Client,
-    aiohttp_server: _Server,
+    aiohttp_client: AiohttpClient,
+    aiohttp_server: AiohttpServer,
     ssl_ctx: ssl.SSLContext,
     client_ssl_ctx: ssl.SSLContext,
 ) -> None:
@@ -101,8 +98,8 @@ async def test_no_x_frame(
 
 
 async def test_no_sts(
-    aiohttp_client: _Client,
-    aiohttp_server: _Server,
+    aiohttp_client: AiohttpClient,
+    aiohttp_server: AiohttpServer,
     ssl_ctx: ssl.SSLContext,
     client_ssl_ctx: ssl.SSLContext,
 ) -> None:
@@ -125,8 +122,8 @@ async def test_no_sts(
 
 
 async def test_no_cto(
-    aiohttp_client: _Client,
-    aiohttp_server: _Server,
+    aiohttp_client: AiohttpClient,
+    aiohttp_server: AiohttpServer,
     ssl_ctx: ssl.SSLContext,
     client_ssl_ctx: ssl.SSLContext,
 ) -> None:
@@ -150,8 +147,8 @@ async def test_no_cto(
 
 
 async def test_no_xss(
-    aiohttp_client: _Client,
-    aiohttp_server: _Server,
+    aiohttp_client: AiohttpClient,
+    aiohttp_server: AiohttpServer,
     ssl_ctx: ssl.SSLContext,
     client_ssl_ctx: ssl.SSLContext,
 ) -> None:
