@@ -1,13 +1,9 @@
-from typing import Awaitable, Callable
-
 from aiohttp import web
-from aiohttp.test_utils import TestClient
+from aiohttp.pytest_plugin import AiohttpClient
 from aiohttp_remotes import ForwardedRelaxed, ForwardedStrict, setup as _setup
 
-_Client = Callable[[web.Application], Awaitable[TestClient]]
 
-
-async def test_forwarded_relaxed_ok(aiohttp_client: _Client) -> None:
+async def test_forwarded_relaxed_ok(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.host == "example.com"
         assert request.scheme == "https"
@@ -25,7 +21,7 @@ async def test_forwarded_relaxed_ok(aiohttp_client: _Client) -> None:
         assert resp.status == 200
 
 
-async def test_forwarded_relaxed_no_for(aiohttp_client: _Client) -> None:
+async def test_forwarded_relaxed_no_for(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.host == "example.com"
         assert request.scheme == "https"
@@ -43,7 +39,7 @@ async def test_forwarded_relaxed_no_for(aiohttp_client: _Client) -> None:
         assert resp.status == 200
 
 
-async def test_forwarded_relaxed_no_proto(aiohttp_client: _Client) -> None:
+async def test_forwarded_relaxed_no_proto(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.host == "example.com"
         assert request.scheme == "http"
@@ -61,7 +57,7 @@ async def test_forwarded_relaxed_no_proto(aiohttp_client: _Client) -> None:
     assert resp.status == 200
 
 
-async def test_forwarded_relaxed_no_host(aiohttp_client: _Client) -> None:
+async def test_forwarded_relaxed_no_host(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         url = cl.make_url("/")
         assert url.host is not None
@@ -82,7 +78,7 @@ async def test_forwarded_relaxed_no_host(aiohttp_client: _Client) -> None:
         assert resp.status == 200
 
 
-async def test_forwarded_relaxed_many_hosts(aiohttp_client: _Client) -> None:
+async def test_forwarded_relaxed_many_hosts(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.host == "example.com"
         assert request.scheme == "https"
@@ -102,7 +98,7 @@ async def test_forwarded_relaxed_many_hosts(aiohttp_client: _Client) -> None:
         assert resp.status == 200
 
 
-async def test_forwarded_strict_ok(aiohttp_client: _Client) -> None:
+async def test_forwarded_strict_ok(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.host == "example.com"
         assert request.scheme == "https"
@@ -120,7 +116,7 @@ async def test_forwarded_strict_ok(aiohttp_client: _Client) -> None:
         assert resp.status == 200
 
 
-async def test_forwarded_strict_no_proto(aiohttp_client: _Client) -> None:
+async def test_forwarded_strict_no_proto(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.host == "example.com"
         assert request.scheme == "http"
@@ -137,7 +133,7 @@ async def test_forwarded_strict_no_proto(aiohttp_client: _Client) -> None:
         assert resp.status == 200
 
 
-async def test_forwarded_strict_no_host(aiohttp_client: _Client) -> None:
+async def test_forwarded_strict_no_host(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.host.startswith("127.0.0.1:")
         assert request.scheme == "https"
@@ -154,7 +150,7 @@ async def test_forwarded_strict_no_host(aiohttp_client: _Client) -> None:
         assert resp.status == 200
 
 
-async def test_forwarded_strict_too_many_protos(aiohttp_client: _Client) -> None:
+async def test_forwarded_strict_too_many_protos(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
@@ -169,7 +165,7 @@ async def test_forwarded_strict_too_many_protos(aiohttp_client: _Client) -> None
         assert resp.status == 400
 
 
-async def test_forwarded_strict_too_many_for(aiohttp_client: _Client) -> None:
+async def test_forwarded_strict_too_many_for(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
@@ -181,7 +177,7 @@ async def test_forwarded_strict_too_many_for(aiohttp_client: _Client) -> None:
     assert resp.status == 400
 
 
-async def test_forwarded_strict_untrusted_ip(aiohttp_client: _Client) -> None:
+async def test_forwarded_strict_untrusted_ip(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
@@ -193,7 +189,7 @@ async def test_forwarded_strict_untrusted_ip(aiohttp_client: _Client) -> None:
         assert resp.status == 400
 
 
-async def test_forwarded_strict_whitelist(aiohttp_client: _Client) -> None:
+async def test_forwarded_strict_whitelist(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         assert request.remote == "127.0.0.1"
         return web.Response()
@@ -206,7 +202,7 @@ async def test_forwarded_strict_whitelist(aiohttp_client: _Client) -> None:
         assert resp.status == 200
 
 
-async def test_forwarded_strict_no_for(aiohttp_client: _Client) -> None:
+async def test_forwarded_strict_no_for(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
