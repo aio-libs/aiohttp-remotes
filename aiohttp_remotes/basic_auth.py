@@ -51,7 +51,7 @@ class BasicAuth(ABC):
             except (UnicodeDecodeError, UnicodeEncodeError, binascii.Error):
                 return await self.raise_error(request)
 
-            credentials = auth_decoded.split(":")
+            credentials = auth_decoded.split(":", 1)
 
             if len(credentials) != 2:
                 return await self.raise_error(request)
