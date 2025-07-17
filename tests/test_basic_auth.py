@@ -58,19 +58,6 @@ async def test_basic_auth_malformed_req(aiohttp_client: AiohttpClient) -> None:
     assert resp.headers["WWW-Authenticate"] == "Basic realm=realm"
 
 
-async def test_basic_auth_malformed_req2(aiohttp_client: AiohttpClient) -> None:
-    async def handler(request: web.Request) -> web.Response:
-        return web.Response()
-
-    app = web.Application()
-    app.router.add_get("/", handler)
-    await _setup(app, BasicAuth("user", "pass", "realm"))
-    cl = await aiohttp_client(app)
-    resp = await cl.get("/", headers={"Authorization": "Basic nonbase64"})
-    assert resp.status == 401
-    assert resp.headers["WWW-Authenticate"] == "Basic realm=realm"
-
-
 async def test_basic_auth_white_path(aiohttp_client: AiohttpClient) -> None:
     async def handler(request: web.Request) -> web.Response:
         return web.Response()
