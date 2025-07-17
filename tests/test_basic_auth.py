@@ -1,18 +1,21 @@
+import pytest
+
 import aiohttp
 from aiohttp import web
 from aiohttp.pytest_plugin import AiohttpClient
 from aiohttp_remotes import BasicAuth, setup as _setup
 
 
-async def test_basic_auth_ok(aiohttp_client: AiohttpClient) -> None:
+@pytest.mark.parametrize("password", ["pass", "pass:pass:"])
+async def test_basic_auth_ok(aiohttp_client: AiohttpClient, password: str) -> None:
     async def handler(request: web.Request) -> web.Response:
         return web.Response()
 
     app = web.Application()
     app.router.add_get("/", handler)
-    await _setup(app, BasicAuth("user", "pass", "realm"))
+    await _setup(app, BasicAuth("user", password, "realm"))
     cl = await aiohttp_client(app)
-    resp = await cl.get("/", auth=aiohttp.BasicAuth("user", "pass"))
+    resp = await cl.get("/", auth=aiohttp.BasicAuth("user", password))
     assert resp.status == 200
 
 
