@@ -1,6 +1,6 @@
 -r prod.txt
 cryptography==46.0.3; platform_machine!="i686" # no 32-bit wheels; no python 3.9 wheels yet
-pytest==8.4.2
+pytest==9.0.0
 pytest-aiohttp==1.1.0
 pytest-asyncio==1.2.0
 pytest-cov==7.0.0
