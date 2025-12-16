@@ -1,5 +1,5 @@
 -r ci.txt
-mypy==1.19.0; implementation_name=="cpython"
+mypy==1.19.1; implementation_name=="cpython"
 pre-commit==4.5.0
 sphinx==9.0.4
 sphinxcontrib-asyncio==0.3.0
