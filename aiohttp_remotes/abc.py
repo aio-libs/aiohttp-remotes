@@ -5,7 +5,7 @@ from typing_extensions import NoReturn
 from aiohttp import web
 
 
-class ABC(abc.ABC):
+class AbstractRemote(abc.ABC):
     @abc.abstractmethod
     async def setup(self, app: web.Application) -> None:
         pass  # pragma: no cover
