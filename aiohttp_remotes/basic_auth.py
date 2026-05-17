@@ -6,10 +6,10 @@ from typing_extensions import NoReturn
 
 from aiohttp import hdrs, web
 
-from .abc import ABC
+from .abc import AbstractRemote
 
 
-class BasicAuth(ABC):
+class BasicAuth(AbstractRemote):
     def __init__(
         self,
         username: str,
