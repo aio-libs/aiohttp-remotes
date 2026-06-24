@@ -4,12 +4,12 @@ from typing import Awaitable, Callable, Optional, Set
 import aiohttp
 from aiohttp import web
 
-from .abc import ABC
+from .abc import AbstractRemote
 from .exceptions import IPNetwork
 from .log import logger
 
 
-class Cloudflare(ABC):
+class Cloudflare(AbstractRemote):
     def __init__(self, client: Optional[aiohttp.ClientSession] = None) -> None:
         self._ip_networks: Set[IPNetwork] = set()
         self._client = client
