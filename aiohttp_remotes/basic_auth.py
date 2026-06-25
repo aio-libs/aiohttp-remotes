@@ -1,5 +1,6 @@
 import base64
 import binascii
+from secrets import compare_digest
 from typing import Awaitable, Callable, Iterable
 
 from typing_extensions import NoReturn
@@ -58,7 +59,9 @@ class BasicAuth(ABC):
 
             username, password = credentials
 
-            if username != self._username or password != self._password:
+            if username != self._username or not compare_digest(
+                password, self._password
+            ):
                 return await self.raise_error(request)
 
         return await handler(request)
