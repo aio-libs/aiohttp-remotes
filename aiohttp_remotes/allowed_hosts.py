@@ -2,7 +2,7 @@ from typing import Awaitable, Callable, Iterable, Set, Union
 
 from aiohttp import web
 
-from .abc import ABC
+from .abc import AbstractRemote
 
 
 class ANY:
@@ -10,7 +10,7 @@ class ANY:
         return True
 
 
-class AllowedHosts(ABC):
+class AllowedHosts(AbstractRemote):
     def __init__(
         self,
         allowed_hosts: Iterable[str] = ("*",),

@@ -3,12 +3,12 @@ from typing import Awaitable, Callable, Iterable
 
 from aiohttp import web
 
-from .abc import ABC
+from .abc import AbstractRemote
 from .exceptions import IncorrectForwardedCount, RemoteError
 from .utils import TrustedOrig, parse_trusted_list, remote_ip
 
 
-class ForwardedRelaxed(ABC):
+class ForwardedRelaxed(AbstractRemote):
     def __init__(self, num: int = 1) -> None:
         self._num = num
 
@@ -38,7 +38,7 @@ class ForwardedRelaxed(ABC):
         return await handler(request)
 
 
-class ForwardedStrict(ABC):
+class ForwardedStrict(AbstractRemote):
     def __init__(self, trusted: TrustedOrig, *, white_paths: Iterable[str] = ()):
         self._trusted = parse_trusted_list(trusted)
         self._white_paths = set(white_paths)
