@@ -1,2 +1,2 @@
-aiohttp==3.13.5
+aiohttp==3.14.4
 flit==4.1.0
