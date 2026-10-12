@@ -1,11 +1,31 @@
-from ipaddress import ip_address
+import re
+from ipaddress import IPv4Address, IPv6Address, ip_address
 from typing import Awaitable, Callable, Iterable
 
 from aiohttp import web
 
 from .abc import ABC
-from .exceptions import IncorrectForwardedCount, RemoteError
+from .exceptions import IncorrectForwardedCount, IPAddress, RemoteError
 from .utils import TrustedOrig, parse_trusted_list, remote_ip
+
+_FORWARDED_IP_RE = re.compile(
+    r"(?:\[(?P<ipv6>[0-9A-Fa-f:.]+)\]|(?P<ipv4>[0-9.]+))"
+    r"(?::(?:[0-9]{1,5}|_[A-Za-z0-9._-]+))?"
+)
+
+
+def _parse_forwarded_for(node: str) -> IPAddress:
+    try:
+        # Keep compatibility with previously accepted bare IP addresses.
+        return ip_address(node)
+    except ValueError:
+        match = _FORWARDED_IP_RE.fullmatch(node)
+        if match is None:
+            raise ValueError("Invalid Forwarded IP node") from None
+        ipv6 = match.group("ipv6")
+        if ipv6 is not None:
+            return IPv6Address(ipv6)
+        return IPv4Address(match.group("ipv4"))
 
 
 class ForwardedRelaxed(ABC):
@@ -68,7 +88,10 @@ class ForwardedStrict(ABC):
             for elem in reversed(request.forwarded):
                 for_ = elem.get("for")
                 if for_:
-                    ips.append(ip_address(for_))
+                    try:
+                        ips.append(_parse_forwarded_for(for_))
+                    except ValueError:
+                        return await self.raise_error(request)
                 proto = elem.get("proto")
                 if proto is not None:
                     overrides["scheme"] = proto
