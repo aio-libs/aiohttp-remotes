@@ -19,7 +19,7 @@ class Secure(ABC):
         sts: Optional[str] = "max-age=31536000; includeSubDomains",
         cto: Optional[str] = "nosniff",
         xss: Optional[str] = "1; mode=block",
-        white_paths: Iterable[str] = ()
+        white_paths: Iterable[str] = (),
     ):
         self._redirect = redirect
         if redirect_url is not None:

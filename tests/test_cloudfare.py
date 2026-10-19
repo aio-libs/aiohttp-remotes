@@ -68,7 +68,7 @@ class FakeCloudfare:
         *,
         ipv4: Sequence[str] = ("127.0.0.0/16",),
         ipv6: Sequence[str] = ("::/16",),
-        ssl_ctx: ssl.SSLContext
+        ssl_ctx: ssl.SSLContext,
     ) -> None:
         self._ipv4 = ipv4
         self._ipv6 = ipv6
