@@ -1,5 +1,5 @@
+from collections.abc import Awaitable, Callable
 from ipaddress import ip_address, ip_network
-from typing import Awaitable, Callable, Optional, Set
 
 import aiohttp
 from aiohttp import web
@@ -10,11 +10,11 @@ from .log import logger
 
 
 class Cloudflare(ABC):
-    def __init__(self, client: Optional[aiohttp.ClientSession] = None) -> None:
-        self._ip_networks: Set[IPNetwork] = set()
+    def __init__(self, client: aiohttp.ClientSession | None = None) -> None:
+        self._ip_networks: set[IPNetwork] = set()
         self._client = client
 
-    def _parse_mask(self, text: str) -> Set[IPNetwork]:
+    def _parse_mask(self, text: str) -> set[IPNetwork]:
         ret = set()
         for mask in text.splitlines():
             try:

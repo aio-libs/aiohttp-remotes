@@ -1,6 +1,5 @@
 import abc
-
-from typing_extensions import NoReturn
+from typing import NoReturn
 
 from aiohttp import web
 

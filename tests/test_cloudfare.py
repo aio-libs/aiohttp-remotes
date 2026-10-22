@@ -1,17 +1,8 @@
 import asyncio
 import socket
 import ssl
-from typing import (
-    Any,
-    AsyncIterator,
-    Awaitable,
-    Callable,
-    Dict,
-    List,
-    Mapping,
-    Optional,
-    Sequence,
-)
+from collections.abc import AsyncIterator, Awaitable, Callable, Mapping, Sequence
+from typing import Any
 
 import pytest
 
@@ -29,7 +20,7 @@ _CloudSession = Callable[..., Awaitable[aiohttp.ClientSession]]
 try:
     from aiohttp.abc import ResolveResult
 except ImportError:
-    ResolveResult = Dict[str, Any]  # type: ignore[assignment, misc]
+    ResolveResult = dict[str, Any]  # type: ignore[assignment, misc]
 
 
 class FakeResolver(AbstractResolver):
@@ -42,7 +33,7 @@ class FakeResolver(AbstractResolver):
 
     async def resolve(
         self, host: str, port: int = 0, family: socket.AddressFamily = socket.AF_INET
-    ) -> List[ResolveResult]:
+    ) -> list[ResolveResult]:
         fake_port = self._fakes.get(host)
         if fake_port is not None:
             return [
@@ -76,10 +67,10 @@ class FakeCloudfare:
         self.app.router.add_get("/ips-v4", self.ipv4)
         self.app.router.add_get("/ips-v6", self.ipv6)
 
-        self.runner: Optional[web.AppRunner] = None
+        self.runner: web.AppRunner | None = None
         self.ssl_context = ssl_ctx
 
-    async def start(self) -> Dict[str, int]:
+    async def start(self) -> dict[str, int]:
         port = unused_port()
         self.runner = web.AppRunner(self.app)
         await self.runner.setup()
