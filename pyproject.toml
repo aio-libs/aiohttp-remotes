@@ -1,17 +1,19 @@
 [build-system]
-requires = ["flit_core >=3.12.0,<4"]
+requires = ["flit_core >=4.1.0,<5"]
 build-backend = "flit_core.buildapi"
 
-[tool.flit.metadata]
-module="aiohttp_remotes"
-dist-name="aiohttp-remotes"
-author="Andrew Svetlov"
-author-email="andrew.svetlov@gmail.com"
-home-page="https://github.com/aio-libs/aiohttp-remotes"
-requires=["aiohttp >= 3.8.1", "typing-extensions >= 3.7.4"]
-requires-python=">=3.9"
-description-file="README.rst"
-classifiers=["License :: OSI Approved :: MIT License",
+[project]
+name = "aiohttp-remotes"
+dynamic = ["version", "description"]
+readme = "README.rst"
+requires-python = ">=3.9"
+authors = [{ name = "Andrew Svetlov", email = "andrew.svetlov@gmail.com" }]
+dependencies = [
+    "aiohttp >= 3.8.1",
+    "typing-extensions >= 3.7.4",
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -20,8 +22,8 @@ classifiers=["License :: OSI Approved :: MIT License",
     "Framework :: aiohttp",
 ]
 
-
-[tool.flit.metadata.urls]
+[project.urls]
+Homepage = "https://github.com/aio-libs/aiohttp-remotes"
 Documentation = "https://aiohttp-remotes.readthedocs.io"
 
 
