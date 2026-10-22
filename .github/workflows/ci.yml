@@ -108,6 +108,8 @@ jobs:
     runs-on: ubuntu-latest
     # Run only on pushing a tag
     if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+    permissions:
+      contents: write  # gh release create
     steps:
     - name: Checkout
       uses: actions/checkout@v7
@@ -116,18 +118,34 @@ jobs:
     - name: Install dependencies
       uses: py-actions/py-dependency-install@v4
       with:
-        path: requirements/prod.txt
+        path: requirements/ci.txt
+    - name: Check the tag matches the package version
+      id: version
+      run: |
+        version=$(sed -n 's/^__version__ = "\(.*\)"$/\1/p' aiohttp_remotes/__init__.py)
+        if [ "v$version" != "$GITHUB_REF_NAME" ]; then
+          echo "Tag $GITHUB_REF_NAME does not match __version__ $version"
+          exit 1
+        fi
+        echo "version=$version" >> $GITHUB_OUTPUT
     - name: Build dists
       run: |
         flit build
-    - name: Make Release
-      uses: aio-libs/create-release@v1.6.6
-      with:
-        changes_file: CHANGES.rst
-        name: aiohttp-remotes
-        version_file: aiohttp_remotes/__init__.py
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        pypi_token: ${{ secrets.PYPI_TOKEN }}
-        dist_dir: dist
-        fix_issue_regex: '\(`#(\\d+) <https://github.com/aio-libs/aiohttp-remotes/issues/\\1>`_\)'
-        fix_issue_repl: "(#\\1)"
+        twine check --strict dist/*
+    - name: Extract release notes
+      run: |
+        python tools/release_notes.py ${{ steps.version.outputs.version }} > release-notes.md
+        cat release-notes.md
+    - name: Upload to PyPI
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
+      run: |
+        twine upload dist/*
+    - name: Make GitHub release
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh release create "$GITHUB_REF_NAME" dist/* \
+          --title "aiohttp-remotes ${{ steps.version.outputs.version }}" \
+          --notes-file release-notes.md

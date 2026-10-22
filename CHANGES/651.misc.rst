@@ -1,0 +1,4 @@
+Replaced the ``aio-libs/create-release`` action in the deploy job with
+``twine upload`` and ``gh release create``, since the bundled ``twine``
+rejected the metadata version 2.5 produced by ``flit_core`` 4
+-- by :user:`asvetlov`.
