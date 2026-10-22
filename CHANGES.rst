@@ -25,7 +25,7 @@ Deprecations and Removals
 Misc
 ----
 
-- `#645 <https://github.com/aio-libs/aiohttp-remotes/issues/645>`_, `#646 <https://github.com/aio-libs/aiohttp-remotes/issues/646>`_, `#647 <https://github.com/aio-libs/aiohttp-remotes/issues/647>`_
+- `#645 <https://github.com/aio-libs/aiohttp-remotes/issues/645>`_, `#646 <https://github.com/aio-libs/aiohttp-remotes/issues/646>`_, `#647 <https://github.com/aio-libs/aiohttp-remotes/issues/647>`_, `#650 <https://github.com/aio-libs/aiohttp-remotes/issues/650>`_
 
 
 1.3.0 (2024-11-01)
