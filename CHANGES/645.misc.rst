@@ -1,2 +1,0 @@
-Added ``AGENTS.md`` with contribution rules for LLM agents and a
-``CLAUDE.md`` that imports it -- by :user:`asvetlov`.

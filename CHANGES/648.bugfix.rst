@@ -1,2 +1,0 @@
-Fixed ``UntrustedIP`` being logged twice for a single rejected request
--- by :user:`asvetlov`.

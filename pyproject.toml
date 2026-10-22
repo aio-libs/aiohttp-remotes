@@ -37,3 +37,6 @@ filename = "CHANGES.rst"
 directory = "CHANGES/"
 title_format = "{version} ({project_date})"
 issue_format = "`#{issue} <https://github.com/aio-libs/aiohttp-remotes/issues/{issue}>`_"
+
+[tool.rstcheck]
+report_level = "WARNING"

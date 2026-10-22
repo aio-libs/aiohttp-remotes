@@ -1,4 +1,0 @@
-Fixed the two Sphinx warnings emitted by ``make doc``: set ``language`` to
-``"en"`` instead of ``None`` and dropped the missing ``_static`` entry from
-``html_static_path``
--- by :user:`asvetlov`.
