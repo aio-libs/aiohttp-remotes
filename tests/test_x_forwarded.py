@@ -1,3 +1,5 @@
+import logging
+
 import pytest
 
 from aiohttp import web
@@ -421,6 +423,24 @@ async def test_x_forwarded_strict_untrusted_ip(aiohttp_client: AiohttpClient) ->
     cl = await aiohttp_client(app)
     resp = await cl.get("/", headers={"X-Forwarded-For": "10.10.10.10"})
     assert resp.status == 400
+
+
+async def test_x_forwarded_strict_untrusted_ip_logged_once(
+    aiohttp_client: AiohttpClient, caplog: pytest.LogCaptureFixture
+) -> None:
+    async def handler(request: web.Request) -> web.Response:
+        return web.Response()
+
+    app = web.Application()
+    app.router.add_get("/", handler)
+    await _setup(app, XForwardedStrict([["20.20.20.20"]]))
+    cl = await aiohttp_client(app)
+    with caplog.at_level(logging.ERROR, logger="aiohttp_remotes"):
+        resp = await cl.get("/", headers={"X-Forwarded-For": "10.10.10.10"})
+    assert resp.status == 400
+    records = [r for r in caplog.records if r.name == "aiohttp_remotes"]
+    assert len(records) == 1
+    assert records[0].getMessage().startswith("Untrusted IP: 127.0.0.1")
 
 
 async def test_x_forwarded_strict_whitelist(aiohttp_client: AiohttpClient) -> None:

@@ -1,9 +1,8 @@
 import base64
 import binascii
+from collections.abc import Awaitable, Callable, Iterable
 from secrets import compare_digest
-from typing import Awaitable, Callable, Iterable
-
-from typing_extensions import NoReturn
+from typing import NoReturn
 
 from aiohttp import hdrs, web
 
@@ -52,7 +51,7 @@ class BasicAuth(ABC):
             except (UnicodeDecodeError, UnicodeEncodeError, binascii.Error):
                 return await self.raise_error(request)
 
-            credentials = auth_decoded.split(":")
+            credentials = auth_decoded.split(":", maxsplit=1)
 
             if len(credentials) != 2:
                 return await self.raise_error(request)
