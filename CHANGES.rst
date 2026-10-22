@@ -1,4 +1,32 @@
+
+
 .. towncrier release notes start
+
+1.4.0 (2026-10-22)
+==================
+
+Bugfixes
+--------
+
+- Fixed ``BasicAuth`` to accept passwords that contain a colon; only the first
+  ``:`` separates the user name from the password
+  -- by `@Cycloctane <https://github.com/Cycloctane>`_. (`#530 <https://github.com/aio-libs/aiohttp-remotes/issues/530>`_)
+- Fixed ``UntrustedIP`` being logged twice for a single rejected request
+  -- by `@asvetlov <https://github.com/asvetlov>`_. (`#648 <https://github.com/aio-libs/aiohttp-remotes/issues/648>`_)
+
+
+Deprecations and Removals
+-------------------------
+
+- Dropped Python 3.9 and 3.10 support, added Python 3.14 and 3.15 support. (`#643 <https://github.com/aio-libs/aiohttp-remotes/issues/643>`_)
+- Dropped the ``typing-extensions`` runtime dependency. (`#644 <https://github.com/aio-libs/aiohttp-remotes/issues/644>`_)
+
+
+Misc
+----
+
+- `#645 <https://github.com/aio-libs/aiohttp-remotes/issues/645>`_, `#646 <https://github.com/aio-libs/aiohttp-remotes/issues/646>`_, `#647 <https://github.com/aio-libs/aiohttp-remotes/issues/647>`_
+
 
 1.3.0 (2024-11-01)
 ==================

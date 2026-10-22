@@ -1,5 +1,0 @@
-Dropped ``sphinxcontrib-asyncio``, which broke ``make doc`` on recent setuptools
-without ``pkg_resources``, and documented ``setup()`` with Sphinx's built-in
-``:async:`` option instead. Existing development environments need
-``pip uninstall sphinxcontrib-asyncio`` before rebuilding the docs
--- by :user:`asvetlov`.
