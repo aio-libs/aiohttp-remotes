@@ -9,3 +9,6 @@ docs/_build
 .python-version
 
 .venv
+
+# Claude Code per-checkout overrides
+CLAUDE.local.md
