@@ -1,0 +1,2 @@
+Removed the committed Sphinx build output under ``docs/_build`` from the repository
+-- by :user:`asvetlov`.
