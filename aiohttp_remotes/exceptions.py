@@ -114,4 +114,3 @@ class UntrustedIP(RemoteError):
         extra = context.copy()
         extra["request"] = request
         logger.error(msg, context, extra=extra)
-        logger.error(msg, context, extra=extra)
