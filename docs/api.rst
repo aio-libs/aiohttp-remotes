@@ -7,7 +7,8 @@ API
 Setup
 -----
 
-.. cofunction:: setup(app, *tools)
+.. function:: setup(app, *tools)
+   :async:
 
    Setup tools provided by the module.
 

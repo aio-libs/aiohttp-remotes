@@ -1,0 +1,3 @@
+Dropped ``sphinxcontrib-asyncio``, which broke ``make doc`` on recent setuptools
+without ``pkg_resources``, and documented ``setup()`` with Sphinx's built-in
+``:async:`` option instead -- by :user:`asvetlov`.
