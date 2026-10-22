@@ -1,4 +1,4 @@
-from typing import Awaitable, Callable, Iterable, Set, Union
+from collections.abc import Awaitable, Callable, Iterable
 
 from aiohttp import web
 
@@ -17,7 +17,7 @@ class AllowedHosts(ABC):
         *,
         white_paths: Iterable[str] = (),
     ) -> None:
-        real_allowed_hosts: Union[Set[str], ANY] = set(allowed_hosts)
+        real_allowed_hosts: set[str] | ANY = set(allowed_hosts)
 
         if "*" in real_allowed_hosts:
             real_allowed_hosts = ANY()

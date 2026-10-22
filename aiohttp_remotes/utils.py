@@ -1,4 +1,4 @@
-import builtins
+from collections.abc import Iterable, Sequence
 from ipaddress import (
     IPv4Address,
     IPv4Network,
@@ -7,7 +7,7 @@ from ipaddress import (
     ip_address,
     ip_network,
 )
-from typing import Iterable, List, Sequence, Union
+from types import EllipsisType
 
 from .exceptions import (
     IncorrectIPCount,
@@ -18,8 +18,8 @@ from .exceptions import (
     UntrustedIP,
 )
 
-Elem = Iterable[Union[str, IPAddress, IPNetwork]]
-ElemEllpisis = Union["builtins.ellipsis", Elem]
+Elem = Iterable[str | IPAddress | IPNetwork]
+ElemEllpisis = EllipsisType | Elem
 TrustedOrig = Iterable[ElemEllpisis]
 
 MSG = "Trusted list should be a sequence of sets " "with either addresses or networks."
@@ -27,7 +27,7 @@ MSG = "Trusted list should be a sequence of sets " "with either addresses or net
 IP_CLASSES = (IPv4Address, IPv6Address, IPv4Network, IPv6Network)
 
 
-def parse_trusted_element(elem: Elem) -> List[Union[IPAddress, IPNetwork]]:
+def parse_trusted_element(elem: Elem) -> list[IPAddress | IPNetwork]:
     new_elem = []
     for item in elem:
         if isinstance(item, IP_CLASSES):
