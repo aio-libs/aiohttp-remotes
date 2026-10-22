@@ -59,7 +59,7 @@ class BasicAuth(ABC):
             username, password = credentials
 
             if username != self._username or not compare_digest(
-                password, self._password
+                password.encode("utf-8"), self._password.encode("utf-8")
             ):
                 return await self.raise_error(request)
 
