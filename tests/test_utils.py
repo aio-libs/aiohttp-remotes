@@ -120,7 +120,7 @@ def test_remote_with_ellipsis() -> None:
     assert ips[-2] == remote_ip(trusted, ips)
 
 
-def test_abc_deprecation():
+def test_abc_deprecation() -> None:
     assert issubclass(ABC, AbstractRemote)
 
     with pytest.warns(
