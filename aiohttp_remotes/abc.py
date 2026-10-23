@@ -1,7 +1,7 @@
 import abc
+from typing import NoReturn
 
 from typing_extensions import deprecated
-from typing import NoReturn
 
 from aiohttp import web
 
@@ -14,7 +14,7 @@ class AbstractRemote(abc.ABC):
     async def raise_error(self, request: web.Request) -> NoReturn:
         raise web.HTTPBadRequest()
 
+
 @deprecated("Renamed to AbstractRemote for readability purposes")
 class ABC(AbstractRemote):
     pass
-
