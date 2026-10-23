@@ -4,12 +4,12 @@ from yarl import URL
 
 from aiohttp import web
 
-from .abc import ABC
+from .abc import AbstractRemote
 from .log import logger
 
 
 @web.middleware
-class Secure(ABC):
+class Secure(AbstractRemote):
     def __init__(
         self,
         *,

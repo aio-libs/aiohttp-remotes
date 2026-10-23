@@ -4,12 +4,12 @@ from ipaddress import ip_address, ip_network
 import aiohttp
 from aiohttp import web
 
-from .abc import ABC
+from .abc import AbstractRemote
 from .exceptions import IPNetwork
 from .log import logger
 
 
-class Cloudflare(ABC):
+class Cloudflare(AbstractRemote):
     def __init__(self, client: aiohttp.ClientSession | None = None) -> None:
         self._ip_networks: set[IPNetwork] = set()
         self._client = client
