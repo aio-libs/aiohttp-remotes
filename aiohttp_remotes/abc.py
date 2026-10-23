@@ -1,6 +1,7 @@
 import abc
 
-from typing_extensions import NoReturn, deprecated
+from typing_extensions import deprecated
+from typing import NoReturn
 
 from aiohttp import web
 

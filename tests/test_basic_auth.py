@@ -1,9 +1,15 @@
+import base64
+
 import pytest
 
-import aiohttp
 from aiohttp import web
 from aiohttp.pytest_plugin import AiohttpClient
 from aiohttp_remotes import BasicAuth, setup as _setup
+
+
+def _auth_header(login: str, password: str) -> dict[str, str]:
+    creds = base64.b64encode(f"{login}:{password}".encode()).decode()
+    return {"Authorization": f"Basic {creds}"}
 
 
 @pytest.mark.parametrize("password", ["pass", "pass:pass:"])
@@ -15,7 +21,7 @@ async def test_basic_auth_ok(aiohttp_client: AiohttpClient, password: str) -> No
     app.router.add_get("/", handler)
     await _setup(app, BasicAuth("user", password, "realm"))
     cl = await aiohttp_client(app)
-    resp = await cl.get("/", auth=aiohttp.BasicAuth("user", password))
+    resp = await cl.get("/", headers=_auth_header("user", password))
     assert resp.status == 200
 
 
@@ -40,7 +46,7 @@ async def test_basic_auth_wrong_creds(aiohttp_client: AiohttpClient) -> None:
     app.router.add_get("/", handler)
     await _setup(app, BasicAuth("user", "pass", "realm"))
     cl = await aiohttp_client(app)
-    resp = await cl.get("/", auth=aiohttp.BasicAuth("user", "badpass"))
+    resp = await cl.get("/", headers=_auth_header("user", "badpass"))
     assert resp.status == 401
     assert resp.headers["WWW-Authenticate"] == "Basic realm=realm"
 

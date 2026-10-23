@@ -1,8 +1,7 @@
 import base64
 import binascii
-from typing import Awaitable, Callable, Iterable
-
-from typing_extensions import NoReturn
+from collections.abc import Awaitable, Callable, Iterable
+from typing import NoReturn
 
 from aiohttp import hdrs, web
 

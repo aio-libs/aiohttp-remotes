@@ -1,4 +1,4 @@
-from typing import Awaitable, Callable, Iterable, Optional, Union
+from collections.abc import Awaitable, Callable, Iterable
 
 from yarl import URL
 
@@ -14,12 +14,12 @@ class Secure(AbstractRemote):
         self,
         *,
         redirect: bool = True,
-        redirect_url: Optional[Union[str, URL]] = None,
-        x_frame: Optional[str] = "DENY",
-        sts: Optional[str] = "max-age=31536000; includeSubDomains",
-        cto: Optional[str] = "nosniff",
-        xss: Optional[str] = "1; mode=block",
-        white_paths: Iterable[str] = ()
+        redirect_url: str | URL | None = None,
+        x_frame: str | None = "DENY",
+        sts: str | None = "max-age=31536000; includeSubDomains",
+        cto: str | None = "nosniff",
+        xss: str | None = "1; mode=block",
+        white_paths: Iterable[str] = (),
     ):
         self._redirect = redirect
         if redirect_url is not None:

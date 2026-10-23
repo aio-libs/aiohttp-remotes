@@ -1,5 +1,5 @@
+from collections.abc import Awaitable, Callable, Iterable
 from ipaddress import ip_address
-from typing import Awaitable, Callable, Iterable
 
 from aiohttp import web
 

@@ -1,7 +1,6 @@
 from abc import abstractmethod
-from collections.abc import Container
+from collections.abc import Awaitable, Callable, Container, Iterable
 from ipaddress import ip_address
-from typing import Awaitable, Callable, Iterable, List
 
 from multidict import MultiMapping
 
@@ -39,8 +38,8 @@ class XForwardedBase(AbstractRemote):
     ) -> web.StreamResponse:
         pass
 
-    def get_forwarded_for(self, headers: MultiMapping[str]) -> List[IPAddress]:
-        forwarded_for: List[str] = headers.getall(hdrs.X_FORWARDED_FOR, [])
+    def get_forwarded_for(self, headers: MultiMapping[str]) -> list[IPAddress]:
+        forwarded_for: list[str] = headers.getall(hdrs.X_FORWARDED_FOR, [])
         if not forwarded_for:
             return []
         if len(forwarded_for) > 1:
@@ -57,8 +56,8 @@ class XForwardedBase(AbstractRemote):
                 )
         return valid_ips
 
-    def get_forwarded_proto(self, headers: MultiMapping[str]) -> List[str]:
-        forwarded_proto: List[str] = headers.getall(hdrs.X_FORWARDED_PROTO, [])
+    def get_forwarded_proto(self, headers: MultiMapping[str]) -> list[str]:
+        forwarded_proto: list[str] = headers.getall(hdrs.X_FORWARDED_PROTO, [])
         if not forwarded_proto:
             return []
         if len(forwarded_proto) > 1:
@@ -66,8 +65,8 @@ class XForwardedBase(AbstractRemote):
         forwarded_proto = forwarded_proto[0].split(",")
         return [p.strip() for p in forwarded_proto]
 
-    def get_forwarded_host(self, headers: MultiMapping[str]) -> List[str]:
-        forwarded_host: List[str] = headers.getall(hdrs.X_FORWARDED_HOST, [])
+    def get_forwarded_host(self, headers: MultiMapping[str]) -> list[str]:
+        forwarded_host: list[str] = headers.getall(hdrs.X_FORWARDED_HOST, [])
         if not forwarded_host:
             return []
         if len(forwarded_host) > 1:
