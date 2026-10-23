@@ -1,2 +1,2 @@
 Rename ``ABC`` to ``AbstractRemote`` and deprecate ``ABC`` name.
--- by :user:`Vizonex`
+-- by :user:`Vizonex`.
