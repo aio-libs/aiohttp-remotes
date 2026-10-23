@@ -1,7 +1,11 @@
 import abc
+import sys
 from typing import NoReturn
 
-from typing_extensions import deprecated
+if sys.version_info < (3, 13):
+    from typing_extensions import deprecated
+else:
+    from warnings import deprecated
 
 from aiohttp import web
 
