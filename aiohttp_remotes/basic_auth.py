@@ -1,6 +1,7 @@
 import base64
 import binascii
 from collections.abc import Awaitable, Callable, Iterable
+from secrets import compare_digest
 from typing import NoReturn
 
 from aiohttp import hdrs, web
@@ -57,7 +58,9 @@ class BasicAuth(ABC):
 
             username, password = credentials
 
-            if username != self._username or password != self._password:
+            if username != self._username or not compare_digest(
+                password.encode("utf-8"), self._password.encode("utf-8")
+            ):
                 return await self.raise_error(request)
 
         return await handler(request)
