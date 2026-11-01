@@ -2,6 +2,7 @@ from ipaddress import IPv4Address, IPv6Address, ip_address, ip_network
 
 import pytest
 
+from aiohttp_remotes.abc import ABC, AbstractRemote
 from aiohttp_remotes.exceptions import IncorrectIPCount, UntrustedIP
 from aiohttp_remotes.utils import parse_trusted_list, remote_ip
 
@@ -117,3 +118,14 @@ def test_remote_with_ellipsis() -> None:
     ]
     trusted = parse_trusted_list([["10.10.0.0/16"], ...])
     assert ips[-2] == remote_ip(trusted, ips)
+
+
+def test_abc_deprecation() -> None:
+    assert issubclass(ABC, AbstractRemote)
+
+    with pytest.warns(
+        DeprecationWarning, match=r"Renamed to AbstractRemote for readability purposes"
+    ):
+
+        class MyRemote(ABC):
+            pass

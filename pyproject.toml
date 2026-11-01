@@ -10,6 +10,7 @@ requires-python = ">=3.11"
 authors = [{ name = "Andrew Svetlov", email = "andrew.svetlov@gmail.com" }]
 dependencies = [
     "aiohttp >= 3.8.1",
+    "typing-extensions>=4.16.0; python_version < '3.13'"
 ]
 classifiers = [
     "License :: OSI Approved :: MIT License",
