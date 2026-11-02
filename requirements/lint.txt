@@ -1,5 +1,5 @@
 -r ci.txt
-mypy==2.4.0; implementation_name=="cpython"
+mypy==2.4.1; implementation_name=="cpython"
 pre-commit==4.7.0
 sphinx==9.1.0
 sphinxcontrib-spelling==8.0.2
