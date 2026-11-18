@@ -6,7 +6,7 @@ from multidict import MultiMapping
 
 from aiohttp import hdrs, web
 
-from .abc import ABC
+from .abc import AbstractRemote
 from .exceptions import (
     IncorrectHostCount,
     IncorrectProtoCount,
@@ -25,7 +25,7 @@ from .utils import (
 )
 
 
-class XForwardedBase(ABC):
+class XForwardedBase(AbstractRemote):
     async def setup(self, app: web.Application) -> None:
         app.middlewares.append(self.middleware)
 
